@@ -366,7 +366,7 @@
             <h3 class="section-title">➕ افزودن وام جدید</h3>
             <div class="add-installment-form">
                 <input type="text" class="form-input" id="installmentName" placeholder="نام وام (مثال: وام مسکن بانک ملت)" required>
-                <input type="text" class="form-input" id="installmentAmount" placeholder="مبلغ وام (تومان)" required>
+                <input type="text" class="form-input" id="installmentMonthly" placeholder="قسط ماهیانه (تومان)" required>
                 <input type="number" class="form-input" id="installmentDay" placeholder="روز سررسید (۱-۳۱)" min="1" max="31" required>
                 <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required>
                 <button class="add-btn" onclick="addInstallment()">➕ افزودن وام</button>
@@ -452,11 +452,6 @@
             return parseInt(cleanStr) || 0;
         }
         
-        // فرمت مبلغ هنگام نمایش
-        function formatAmountDisplay(amount) {
-            return formatNumber(amount) + ' تومان';
-        }
-        
         // نمایش نوتیفیکیشن
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
@@ -514,16 +509,16 @@
         // افزودن وام جدید
         function addInstallment() {
             const nameInput = document.getElementById('installmentName');
-            const amountInput = document.getElementById('installmentAmount');
+            const monthlyInput = document.getElementById('installmentMonthly');
             const dayInput = document.getElementById('installmentDay');
             const monthsInput = document.getElementById('installmentMonths');
             
             const name = nameInput.value.trim();
-            const amount = parseAmount(amountInput.value);
+            const monthlyAmount = parseAmount(monthlyInput.value);
             const day = parseInt(dayInput.value);
             const remainingMonths = parseInt(monthsInput.value);
             
-            console.log('مبلغ وارد شده:', amountInput.value, 'مبلغ تبدیل شده:', amount);
+            console.log('مبلغ ماهانه وارد شده:', monthlyInput.value, 'مبلغ تبدیل شده:', monthlyAmount);
             
             // اعتبارسنجی
             if (!name) {
@@ -531,8 +526,8 @@
                 return;
             }
             
-            if (amount <= 0) {
-                showNotification('لطفاً مبلغ وام را به درستی وارد کنید', 'error');
+            if (monthlyAmount <= 0) {
+                showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید', 'error');
                 return;
             }
             
@@ -547,13 +542,15 @@
             }
             
             const installmentDates = calculateInstallmentDates(day, remainingMonths);
-            const monthlyAmount = Math.floor(amount / remainingMonths);
+            
+            // محاسبه مبلغ کل باقیمانده
+            const totalRemainingAmount = monthlyAmount * remainingMonths;
             
             loans.push({
                 id: Date.now(),
                 name: name,
-                totalAmount: amount,
                 monthlyAmount: monthlyAmount,
+                totalRemainingAmount: totalRemainingAmount,
                 day: day,
                 remainingMonths: remainingMonths,
                 dates: installmentDates,
@@ -567,7 +564,7 @@
             
             // پاک کردن فیلدها
             nameInput.value = '';
-            amountInput.value = '';
+            monthlyInput.value = '';
             dayInput.value = '';
             monthsInput.value = '';
             
@@ -594,6 +591,9 @@
                 // به‌روزرسانی ماه‌های مانده
                 const unpaidCount = loan.dates.filter(date => !date.isPaid).length;
                 loan.remainingMonths = unpaidCount;
+                
+                // به‌روزرسانی مبلغ کل باقیمانده
+                loan.totalRemainingAmount = loan.monthlyAmount * unpaidCount;
                 
                 // اگر تمام قسط‌ها پرداخت شده‌اند
                 loan.isActive = unpaidCount > 0;
@@ -658,12 +658,12 @@
                 loanCard.innerHTML = `
                     <div class="loan-header">
                         <div class="loan-title">${loan.name}</div>
-                        <div class="loan-amount">${formatNumber(loan.totalAmount)}</div>
+                        <div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div>
                     </div>
                     
                     <div class="loan-details">
                         <div class="detail-item">
-                            <div class="detail-label">مبلغ ماهانه</div>
+                            <div class="detail-label">قسط ماهیانه</div>
                             <div class="detail-value">${formatNumber(loan.monthlyAmount)} تومان</div>
                         </div>
                         <div class="detail-item">
@@ -676,7 +676,7 @@
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">مانده کل</div>
-                            <div class="detail-value">${formatNumber(loan.monthlyAmount * loan.remainingMonths)} تومان</div>
+                            <div class="detail-value">${formatNumber(loan.totalRemainingAmount)} تومان</div>
                         </div>
                     </div>
                     
@@ -700,7 +700,7 @@
         function updateStats() {
             const totalLoans = loans.length;
             const totalRemaining = loans.reduce((sum, loan) => {
-                return sum + (loan.monthlyAmount * loan.remainingMonths);
+                return sum + loan.totalRemainingAmount;
             }, 0);
             
             let upcomingCount = 0;
@@ -718,9 +718,9 @@
                 });
             });
             
-            document.getElementById('totalLoans').textContent = totalLoans;
-            document.getElementById('upcomingCount').textContent = upcomingCount;
-            document.getElementById('overdueCount').textContent = overdueCount;
+            document.getElementById('totalLoans').textContent = formatNumber(totalLoans);
+            document.getElementById('upcomingCount').textContent = formatNumber(upcomingCount);
+            document.getElementById('overdueCount').textContent = formatNumber(overdueCount);
             document.getElementById('totalRemaining').textContent = formatNumber(totalRemaining);
         }
         
