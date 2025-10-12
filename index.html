@@ -5,400 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدیریت اقساط - آریو مقتدر</title>
     <style>
-        /* استایل‌های قبلی بدون تغییر */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Vazir', Tahoma, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-            direction: rtl;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .creator {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-        
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-        
-        .add-installment-form {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
-            gap: 12px;
-            margin-bottom: 30px;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-        
-        @media (max-width: 768px) {
-            .add-installment-form {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .form-input {
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #4c6ef5;
-            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
-        }
-        
-        .add-btn {
-            background: #40c057;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        
-        .add-btn:hover {
-            background: #2f9e44;
-            transform: translateY(-2px);
-        }
-        
-        .installments-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .loan-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            border-left: 5px solid #4c6ef5;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        
-        .loan-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        .loan-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f8f9fa;
-        }
-        
-        .loan-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .loan-amount {
-            font-size: 20px;
-            font-weight: bold;
-            color: #e03131;
-            direction: ltr;
-            text-align: left;
-        }
-        
-        .loan-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .detail-item {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .detail-label {
-            font-size: 11px;
-            color: #6c757d;
-            margin-bottom: 5px;
-        }
-        
-        .detail-value {
-            font-size: 14px;
-            font-weight: bold;
-            color: #495057;
-        }
-        
-        .installments-list {
-            margin-top: 15px;
-        }
-        
-        .installment-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 10px;
-            padding: 10px;
-            margin-bottom: 8px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            align-items: center;
-            transition: all 0.3s;
-        }
-        
-        .installment-row.upcoming {
-            background: #fff3cd;
-            border-right: 3px solid #ffc107;
-        }
-        
-        .installment-row.overdue {
-            background: #ffe3e3;
-            border-right: 3px solid #fa5252;
-        }
-        
-        .installment-row.paid {
-            background: #d3f9d8;
-            border-right: 3px solid #40c057;
-            opacity: 0.8;
-        }
-        
-        .installment-date {
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .installment-amount {
-            font-size: 14px;
-            font-weight: bold;
-            color: #495057;
-            direction: ltr;
-            text-align: left;
-        }
-        
-        .payment-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .pay-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        .pay-btn.paid {
-            background: #40c057;
-            color: white;
-        }
-        
-        .pay-btn.unpaid {
-            background: #fa5252;
-            color: white;
-        }
-        
-        .pay-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .pay-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .loan-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 2px solid #f8f9fa;
-        }
-        
-        .delete-btn {
-            background: #fa5252;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-        
-        .delete-btn:hover {
-            background: #e03131;
-            transform: scale(1.05);
-        }
-        
-        .loan-status {
-            font-size: 12px;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 15px;
-        }
-        
-        .status-active {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-completed {
-            background: #d3f9d8;
-            color: #0f5132;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-            grid-column: 1 / -1;
-        }
-        
-        .empty-state i {
-            font-size: 80px;
-            margin-bottom: 20px;
-            display: block;
-            color: #adb5bd;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #4c6ef5;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: #6c757d;
-            font-size: 14px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #40c057;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f8f9fa;
-        }
-
-        /* استایل‌های جدید برای مدیریت داده */
-        .data-management {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-
-        .data-btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .export-btn {
-            background: #4c6ef5;
-            color: white;
-        }
-
-        .import-btn {
-            background: #ff922b;
-            color: white;
-        }
-
-        .clear-btn {
-            background: #fa5252;
-            color: white;
-        }
-
-        .data-btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        .file-input {
-            display: none;
-        }
+        * {margin:0; padding:0; box-sizing:border-box; font-family:'Vazir', Tahoma, sans-serif;}
+        body {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height:100vh; padding:20px; direction:rtl;}
+        .container {max-width:1000px; margin:0 auto;}
+        header {text-align:center; margin-bottom:30px; color:white; text-shadow:0 2px 5px rgba(0,0,0,0.3);}
+        h1 {font-size:2.5rem; margin-bottom:10px;}
+        .creator {font-size:1rem; opacity:0.9; margin-top:10px;}
+        .main-card {background:white; border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.2); margin-bottom:20px;}
+        .add-installment-form {display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; gap:12px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
+        @media (max-width:768px){.add-installment-form{grid-template-columns:1fr;}}
+        .form-input {padding:12px 15px; border:2px solid #e9ecef; border-radius:10px; font-size:14px; transition:all 0.3s;}
+        .form-input:focus {outline:none; border-color:#4c6ef5; box-shadow:0 0 0 3px rgba(76,110,245,0.1);}
+        .add-btn {background:#40c057; color:white; border:none; border-radius:10px; padding:12px 20px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s; white-space:nowrap;}
+        .add-btn:hover {background:#2f9e44; transform:translateY(-2px);}
+        .installments-container {display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px; margin-top:20px;}
+        .loan-card {background:white; border-radius:15px; padding:20px; border-left:5px solid #4c6ef5; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:all 0.3s;}
+        .loan-card:hover {transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+        .loan-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
+        .loan-title {font-size:18px; font-weight:bold; color:#2c3e50;}
+        .loan-amount {font-size:20px; font-weight:bold; color:#e03131; direction:ltr; text-align:left;}
+        .loan-details {display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;}
+        .detail-item {background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;}
+        .detail-label {font-size:11px; color:#6c757d; margin-bottom:5px;}
+        .detail-value {font-size:14px; font-weight:bold; color:#495057;}
+        .installments-list {margin-top:15px;}
+        .installment-row {display:grid; grid-template-columns:1fr 1fr auto; gap:10px; padding:10px; margin-bottom:8px; background:#f8f9fa; border-radius:8px; align-items:center; transition:all 0.3s;}
+        .installment-row.upcoming {background:#fff3cd; border-right:3px solid #ffc107;}
+        .installment-row.overdue {background:#ffe3e3; border-right:3px solid #fa5252;}
+        .installment-row.paid {background:#d3f9d8; border-right:3px solid #40c057; opacity:0.8;}
+        .installment-date {font-size:13px; font-weight:500;}
+        .installment-amount {font-size:14px; font-weight:bold; color:#495057; direction:ltr; text-align:left;}
+        .payment-buttons {display:flex; gap:5px;}
+        .pay-btn {padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; transition:all 0.3s;}
+        .pay-btn.paid {background:#40c057; color:white;}
+        .pay-btn.unpaid {background:#fa5252; color:white;}
+        .pay-btn:hover {transform:scale(1.05);}
+        .pay-btn:disabled {opacity:0.6; cursor:not-allowed; transform:none;}
+        .loan-actions {display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:2px solid #f8f9fa;}
+        .delete-btn {background:#fa5252; color:white; border:none; border-radius:6px; padding:8px 15px; cursor:pointer; font-size:12px; transition:all 0.3s;}
+        .delete-btn:hover {background:#e03131; transform:scale(1.05);}
+        .loan-status {font-size:12px; font-weight:bold; padding:5px 10px; border-radius:15px;}
+        .status-active {background:#fff3cd; color:#856404;}
+        .status-completed {background:#d3f9d8; color:#0f5132;}
+        .empty-state {text-align:center; padding:60px 20px; color:#6c757d; grid-column:1 / -1;}
+        .empty-state i {font-size:80px; margin-bottom:20px; display:block; color:#adb5bd;}
+        .stats {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:30px;}
+        .stat-card {background:white; padding:20px; border-radius:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+        .stat-value {font-size:1.8rem; font-weight:bold; color:#4c6ef5; margin-bottom:5px;}
+        .stat-label {color:#6c757d; font-size:14px;}
+        .notification {position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#40c057; color:white; padding:15px 25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; display:none;}
+        .section-title {font-size:1.5rem; color:#2c3e50; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
+        .data-management {display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:15px; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:15px;}
+        .data-btn {padding:12px 20px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s;}
+        .export-btn {background:#4c6ef5; color:white;}
+        .import-btn {background:#ff922b; color:white;}
+        .clear-btn {background:#fa5252; color:white;}
+        .data-btn:hover {transform:translateY(-2px); opacity:0.9;}
+        .file-input {display:none;}
     </style>
 </head>
 <body>
@@ -411,7 +74,7 @@
         <div class="main-card">
             <h3 class="section-title">➕ افزودن وام جدید</h3>
             <div class="add-installment-form">
-                <input type="text" class="form-input" id="installmentName" placeholder="نام وام (مثال: وام مسکن بانک ملت)" required>
+                <input type="text" class="form-input" id="installmentName" placeholder="نام وام" required>
                 <input type="text" class="form-input" id="installmentMonthly" placeholder="قسط ماهیانه (تومان)" required>
                 <input type="number" class="form-input" id="installmentDay" placeholder="روز سررسید (۱-۳۱)" min="1" max="31" required>
                 <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required>
@@ -419,35 +82,22 @@
             </div>
             
             <h3 class="section-title">📋 لیست وام‌ها</h3>
-            <div class="installments-container" id="installmentsContainer">
-                <!-- لیست وام‌ها اینجا نمایش داده می‌شود -->
-            </div>
+            <div class="installments-container" id="installmentsContainer"></div>
 
             <h3 class="section-title">💾 مدیریت داده‌ها</h3>
             <div class="data-management">
-                <button class="data-btn export-btn" onclick="exportData()">📥 خروجی گرفتن (Export)</button>
-                <button class="data-btn import-btn" onclick="document.getElementById('importFile').click()">📤 وارد کردن (Import)</button>
+                <button class="data-btn export-btn" onclick="exportData()">📥 خروجی گرفتن</button>
+                <button class="data-btn import-btn" onclick="document.getElementById('importFile').click()">📤 وارد کردن</button>
                 <button class="data-btn clear-btn" onclick="clearAllData()">🗑️ حذف همه داده‌ها</button>
+                <button class="data-btn" style="background:#228be6; color:white;" onclick="testNotification()">🔔 تست نوتیفیکیشن</button>
                 <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(event)">
             </div>
             
             <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalLoans">0</div>
-                    <div class="stat-label">تعداد وام‌ها</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="upcomingCount">0</div>
-                    <div class="stat-label">قسط‌های پیش‌رو</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalRemaining">0</div>
-                    <div class="stat-label">مجموع مانده (تومان)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="overdueCount">0</div>
-                    <div class="stat-label">قسط‌های معوق</div>
-                </div>
+                <div class="stat-card"><div class="stat-value" id="totalLoans">0</div><div class="stat-label">تعداد وام‌ها</div></div>
+                <div class="stat-card"><div class="stat-value" id="upcomingCount">0</div><div class="stat-label">قسط‌های پیش‌رو</div></div>
+                <div class="stat-card"><div class="stat-value" id="totalRemaining">0</div><div class="stat-label">مجموع مانده (تومان)</div></div>
+                <div class="stat-card"><div class="stat-value" id="overdueCount">0</div><div class="stat-label">قسط‌های معوق</div></div>
             </div>
         </div>
     </div>
@@ -455,347 +105,181 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // داده‌ها و متغیرها
         let loans = JSON.parse(localStorage.getItem('loans')) || [];
 
-        const persianMonths = [
-            'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-            'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-        ];
+        const persianMonths = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 
         function gregorianToJalali(gy, gm, gd) {
-            let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
             let jy = (gy <= 1600) ? 0 : 979;
             gy -= (gy <= 1600) ? 621 : 1600;
             let gy2 = (gm > 2) ? (gy + 1) : gy;
-            let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) 
-                      + (parseInt((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
-            jy += 33 * (parseInt(days / 12053));
+            let days = 365*gy + parseInt((gy2+3)/4) - parseInt((gy2+99)/100) + parseInt((gy2+399)/400) - 80 + gd + g_d_m[gm-1];
+            jy += 33*parseInt(days/12053);
             days %= 12053;
-            jy += 4 * (parseInt(days / 1461));
+            jy += 4*parseInt(days/1461);
             days %= 1461;
-            jy += parseInt((days - 1) / 365);
-            if (days > 365) days = (days - 1) % 365;
-            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
-            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
-            return [jy, jm, jd];
+            jy += parseInt((days-1)/365);
+            if(days>365) days=(days-1)%365;
+            let jm = (days<186) ? 1+parseInt(days/31) : 7+parseInt((days-186)/30);
+            let jd = 1+((days<186)?(days%31):((days-186)%30));
+            return [jy,jm,jd];
         }
 
         function getTodayPersianDate() {
             const today = new Date();
-            const [jy, jm, jd] = gregorianToJalali(
-                today.getFullYear(), 
-                today.getMonth() + 1, 
-                today.getDate()
-            );
-            return { year: jy, month: jm, day: jd, dateStr: `${jy}/${jm}/${jd}` };
+            const [jy,jm,jd] = gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate());
+            return {year:jy, month:jm, day:jd, dateStr:`${jy}/${jm}/${jd}`};
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat('fa-IR').format(num);
-        }
+        function formatNumber(num) { return new Intl.NumberFormat('fa-IR').format(num); }
+        function parseAmount(amountStr) { return parseInt(amountStr.replace(/[^\d]/g,'')) || 0; }
 
-        function parseAmount(amountStr) {
-            const cleanStr = amountStr.replace(/[^\d]/g, '');
-            return parseInt(cleanStr) || 0;
-        }
-
-        function showNotification(message, type = 'success') {
+        function showNotification(message, type='success'){
             const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.background = type === 'success' ? '#40c057' : '#fa5252';
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+            notification.textContent=message;
+            notification.style.background = type==='success'?'#40c057':'#fa5252';
+            notification.style.display='block';
+            setTimeout(()=>{notification.style.display='none';},3000);
         }
 
-        function calculateInstallmentDates(day, remainingMonths) {
-            const dates = [];
-            const today = getTodayPersianDate();
-            
-            for (let i = 0; i < remainingMonths; i++) {
-                let year = today.year;
-                let month = today.month + i;
-                
-                while (month > 12) {
-                    month -= 12;
-                    year += 1;
-                }
-                
-                const installmentDate = {
-                    year: year,
-                    month: month,
-                    day: day,
-                    dateStr: `${year}/${month}/${day}`,
-                    displayDate: `${day} ${persianMonths[month-1]} ${year}`,
-                    isPaid: false,
-                    isOverdue: isDateOverdue(year, month, day),
-                    reminded: false
-                };
-                
-                dates.push(installmentDate);
-            }
-            
-            return dates;
-        }
-
-        function isDateOverdue(year, month, day) {
-            const today = getTodayPersianDate();
-            if (year < today.year) return true;
-            if (year === today.year && month < today.month) return true;
-            if (year === today.year && month === today.month && day < today.day) return true;
+        function isDateOverdue(year, month, day){
+            const today=getTodayPersianDate();
+            if(year<today.year) return true;
+            if(year===today.year && month<today.month) return true;
+            if(year===today.year && month===today.month && day<today.day) return true;
             return false;
         }
 
-        // -------------- عملکردهای اصلی (add, delete, toggle) و ذخیره ----------------
-        function addInstallment() {
-            const nameInput = document.getElementById('installmentName');
-            const monthlyInput = document.getElementById('installmentMonthly');
-            const dayInput = document.getElementById('installmentDay');
-            const monthsInput = document.getElementById('installmentMonths');
-            
-            const name = nameInput.value.trim();
-            const monthlyAmount = parseAmount(monthlyInput.value);
-            const day = parseInt(dayInput.value);
-            const remainingMonths = parseInt(monthsInput.value);
-            
-            if (!name) { showNotification('لطفاً نام وام را وارد کنید', 'error'); return; }
-            if (monthlyAmount <= 0) { showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید', 'error'); return; }
-            if (day < 1 || day > 31) { showNotification('روز سررسید باید بین ۱ تا ۳۱ باشد', 'error'); return; }
-            if (remainingMonths < 1 || remainingMonths > 120) { showNotification('ماه‌های مانده باید بین ۱ تا ۱۲۰ باشد', 'error'); return; }
+        function calculateInstallmentDates(day, remainingMonths){
+            const dates=[]; const today=getTodayPersianDate();
+            for(let i=0;i<remainingMonths;i++){
+                let year=today.year, month=today.month+i;
+                while(month>12){month-=12; year+=1;}
+                const installmentDate={year, month, day, dateStr:`${year}/${month}/${day}`, displayDate:`${day} ${persianMonths[month-1]} ${year}`, isPaid:false, isOverdue:isDateOverdue(year,month,day)};
+                dates.push(installmentDate);
+            }
+            return dates;
+        }
 
-            const installmentDates = calculateInstallmentDates(day, remainingMonths);
-            const totalRemainingAmount = monthlyAmount * remainingMonths;
-            
-            loans.push({
-                id: Date.now(),
-                name: name,
-                monthlyAmount: monthlyAmount,
-                totalRemainingAmount: totalRemainingAmount,
-                day: day,
-                remainingMonths: remainingMonths,
-                dates: installmentDates,
-                createdAt: new Date().toISOString(),
-                isActive: true
-            });
-            
-            saveLoans();
-            renderLoans();
-            updateStats();
-            
-            nameInput.value = '';
-            monthlyInput.value = '';
-            dayInput.value = '';
-            monthsInput.value = '';
-            
+        function addInstallment(){
+            const nameInput=document.getElementById('installmentName');
+            const monthlyInput=document.getElementById('installmentMonthly');
+            const dayInput=document.getElementById('installmentDay');
+            const monthsInput=document.getElementById('installmentMonths');
+
+            const name=nameInput.value.trim();
+            const monthlyAmount=parseAmount(monthlyInput.value);
+            const day=parseInt(dayInput.value);
+            const remainingMonths=parseInt(monthsInput.value);
+
+            if(!name){showNotification('لطفاً نام وام را وارد کنید','error'); return;}
+            if(monthlyAmount<=0){showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید','error'); return;}
+            if(day<1||day>31){showNotification('روز سررسید باید بین ۱ تا ۳۱ باشد','error'); return;}
+            if(remainingMonths<1||remainingMonths>120){showNotification('ماه‌های مانده باید بین ۱ تا ۱۲۰ باشد','error'); return;}
+
+            const installmentDates=calculateInstallmentDates(day,remainingMonths);
+            const totalRemainingAmount=monthlyAmount*remainingMonths;
+
+            loans.push({id:Date.now(), name, monthlyAmount, totalRemainingAmount, day, remainingMonths, dates:installmentDates, createdAt:new Date().toISOString(), isActive:true});
+            saveLoans(); renderLoans(); updateStats();
+
+            nameInput.value=''; monthlyInput.value=''; dayInput.value=''; monthsInput.value='';
             showNotification('وام جدید با موفقیت اضافه شد');
         }
 
-        function deleteLoan(id) {
-            if (confirm('آیا از حذف این وام مطمئن هستید؟')) {
-                loans = loans.filter(loan => loan.id !== id);
-                saveLoans();
-                renderLoans();
-                updateStats();
-                showNotification('وام با موفقیت حذف شد');
-            }
-        }
+        function deleteLoan(id){ if(confirm('آیا از حذف این وام مطمئن هستید؟')){ loans=loans.filter(l=>l.id!==id); saveLoans(); renderLoans(); updateStats(); showNotification('وام با موفقیت حذف شد'); } }
 
-        function togglePayment(loanId, dateIndex, status) {
-            const loan = loans.find(loan => loan.id === loanId);
-            if (loan) {
-                loan.dates[dateIndex].isPaid = status;
-                
-                const unpaidCount = loan.dates.filter(date => !date.isPaid).length;
-                loan.remainingMonths = unpaidCount;
-                loan.totalRemainingAmount = loan.monthlyAmount * unpaidCount;
-                loan.isActive = unpaidCount > 0;
-                
-                saveLoans();
-                renderLoans();
-                updateStats();
-                
-                const action = status ? 'پرداخت شده' : 'پرداخت نشد';
+        function togglePayment(loanId,dateIndex,status){
+            const loan=loans.find(l=>l.id===loanId);
+            if(loan){ loan.dates[dateIndex].isPaid=status;
+                const unpaidCount=loan.dates.filter(d=>!d.isPaid).length;
+                loan.remainingMonths=unpaidCount; loan.totalRemainingAmount=loan.monthlyAmount*unpaidCount;
+                loan.isActive=unpaidCount>0; saveLoans(); renderLoans(); updateStats();
+                const action=status?'پرداخت شده':'پرداخت نشد';
                 showNotification(`قسط به عنوان ${action} علامت‌گذاری شد`);
             }
         }
 
-        function renderLoans() {
-            const container = document.getElementById('installmentsContainer');
-            if (loans.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i>💳</i>
-                        <h3>هیچ وامی ثبت نشده است</h3>
-                        <p>وام اول خود را اضافه کنید تا شروع کنیم</p>
-                    </div>
-                `;
-                return;
-            }
-            container.innerHTML = '';
-            loans.forEach(loan => {
-                const card = document.createElement('div');
-                card.className = 'loan-card';
-                
-                let installmentsHTML = '';
-                loan.dates.forEach((date, index) => {
-                    let rowClass = date.isPaid ? 'paid' : (date.isOverdue ? 'overdue' : 'upcoming');
-                    installmentsHTML += `
-                        <div class="installment-row ${rowClass}">
-                            <div class="installment-date">${date.displayDate}</div>
-                            <div class="installment-amount">${formatNumber(loan.monthlyAmount)}</div>
-                            <div class="payment-buttons">
-                                <button class="pay-btn paid" onclick="togglePayment(${loan.id}, ${index}, true)" ${date.isPaid ? 'disabled' : ''}>پرداخت شد</button>
-                                <button class="pay-btn unpaid" onclick="togglePayment(${loan.id}, ${index}, false)" ${!date.isPaid ? 'disabled' : ''}>پرداخت نشد</button>
-                            </div>
+        function renderLoans(){
+            const container=document.getElementById('installmentsContainer');
+            if(loans.length===0){container.innerHTML=`<div class="empty-state"><i>💳</i><h3>هیچ وامی ثبت نشده است</h3><p>وام اول خود را اضافه کنید تا شروع کنیم</p></div>`; return;}
+            container.innerHTML='';
+            loans.forEach(loan=>{
+                const card=document.createElement('div'); card.className='loan-card';
+                let installmentsHTML='';
+                loan.dates.forEach((date,index)=>{
+                    let rowClass='';
+                    if(date.isPaid){rowClass='paid';} else if(date.isOverdue){rowClass='overdue';} else {rowClass='upcoming';}
+                    installmentsHTML+=`<div class="installment-row ${rowClass}">
+                        <div class="installment-date">${date.displayDate}</div>
+                        <div class="installment-amount">${formatNumber(loan.monthlyAmount)} تومان</div>
+                        <div class="payment-buttons">
+                            <button class="pay-btn ${date.isPaid?'paid':'unpaid'}" onclick="togglePayment(${loan.id},${index},${!date.isPaid})">${date.isPaid?'✅':'❌'}</button>
                         </div>
-                    `;
+                    </div>`;
                 });
-
-                card.innerHTML = `
+                card.innerHTML=`
                     <div class="loan-header">
                         <div class="loan-title">${loan.name}</div>
-                        <div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div>
+                        <div class="loan-amount">${formatNumber(loan.totalRemainingAmount)} تومان</div>
                     </div>
                     <div class="loan-details">
-                        <div class="detail-item">
-                            <div class="detail-label">قسط ماهیانه</div>
-                            <div class="detail-value">${formatNumber(loan.monthlyAmount)} تومان</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">روز سررسید</div>
-                            <div class="detail-value">هر ماه ${loan.day}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ماه‌های مانده</div>
-                            <div class="detail-value">${loan.remainingMonths} ماه</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">مانده کل</div>
-                            <div class="detail-value">${formatNumber(loan.totalRemainingAmount)} تومان</div>
-                        </div>
+                        <div class="detail-item"><div class="detail-label">قسط ماهیانه</div><div class="detail-value">${formatNumber(loan.monthlyAmount)} تومان</div></div>
+                        <div class="detail-item"><div class="detail-label">ماه‌های مانده</div><div class="detail-value">${loan.remainingMonths}</div></div>
                     </div>
                     <div class="installments-list">${installmentsHTML}</div>
                     <div class="loan-actions">
-                        <button class="delete-btn" onclick="deleteLoan(${loan.id})">🗑️ حذف وام</button>
-                        <div class="loan-status ${loan.isActive ? 'status-active' : 'status-completed'}">
-                            ${loan.isActive ? '🔵 فعال' : '✅ تکمیل شده'}
-                        </div>
+                        <span class="loan-status ${loan.isActive?'status-active':'status-completed'}">${loan.isActive?'فعال':'تکمیل‌شده'}</span>
+                        <button class="delete-btn" onclick="deleteLoan(${loan.id})">حذف وام</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function updateStats() {
-            const totalLoans = loans.length;
-            const totalRemaining = loans.reduce((sum, loan) => sum + loan.totalRemainingAmount, 0);
-            let upcomingCount = 0;
-            let overdueCount = 0;
+        function saveLoans(){localStorage.setItem('loans',JSON.stringify(loans));}
 
-            loans.forEach(loan => {
-                loan.dates.forEach(date => {
-                    if (!date.isPaid) {
-                        if (date.isOverdue) overdueCount++;
-                        else upcomingCount++;
-                    }
-                });
-            });
-
-            document.getElementById('totalLoans').textContent = formatNumber(totalLoans);
-            document.getElementById('upcomingCount').textContent = formatNumber(upcomingCount);
-            document.getElementById('overdueCount').textContent = formatNumber(overdueCount);
-            document.getElementById('totalRemaining').textContent = formatNumber(totalRemaining);
+        function updateStats(){
+            document.getElementById('totalLoans').textContent=loans.length;
+            let upcoming=0, overdue=0, total=0;
+            loans.forEach(l=>l.dates.forEach(d=>{if(!d.isPaid){total+=l.monthlyAmount; d.isOverdue?overdue++:upcoming++;}}));
+            document.getElementById('upcomingCount').textContent=upcoming;
+            document.getElementById('overdueCount').textContent=overdue;
+            document.getElementById('totalRemaining').textContent=formatNumber(total);
         }
 
-        function saveLoans() {
-            localStorage.setItem('loans', JSON.stringify(loans));
+        function exportData(){
+            const blob=new Blob([JSON.stringify(loans,null,2)],{type:'application/json'});
+            const url=URL.createObjectURL(blob); const a=document.createElement('a');
+            a.href=url; a.download='loans_data.json'; a.click(); URL.revokeObjectURL(url);
+            showNotification('داده‌ها با موفقیت خروجی گرفته شد');
         }
 
-        function exportData() {
-            const blob = new Blob([JSON.stringify(loans, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `installments_backup_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            showNotification('داده‌ها با موفقیت export شدند');
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported) && imported.every(l => l.name && l.monthlyAmount && l.day && l.remainingMonths)) {
-                        if (confirm(`آیا می‌خواهید ${imported.length} وام وارد کنید؟ داده‌های فعلی جایگزین می‌شوند.`)) {
-                            loans = imported;
-                            saveLoans();
-                            renderLoans();
-                            updateStats();
-                            showNotification('داده‌ها با موفقیت import شدند');
-                        }
-                    } else showNotification('فایل انتخاب شده معتبر نیست', 'error');
-                } catch {
-                    showNotification('خطا در خواندن فایل', 'error');
-                }
-            };
+        function importData(event){
+            const file=event.target.files[0]; if(!file) return;
+            const reader=new FileReader();
+            reader.onload=function(e){try{loans=JSON.parse(e.target.result); saveLoans(); renderLoans(); updateStats(); showNotification('داده‌ها با موفقیت وارد شد');}catch(err){showNotification('خطا در وارد کردن فایل','error');}};
             reader.readAsText(file);
-            event.target.value = '';
         }
 
-        function clearAllData() {
-            if (confirm('آیا از حذف تمام داده‌ها مطمئن هستید؟ این عمل قابل بازگشت نیست!')) {
-                loans = [];
-                localStorage.removeItem('loans');
-                renderLoans();
-                updateStats();
-                showNotification('تمامی داده‌ها حذف شدند');
-            }
+        function clearAllData(){if(confirm('آیا مطمئن هستید که همه داده‌ها حذف شود؟')){loans=[]; saveLoans(); renderLoans(); updateStats(); showNotification('تمام داده‌ها حذف شد');}}
+
+        function testNotification(){
+            if("Notification" in window){
+                if(Notification.permission==="default"){Notification.requestPermission().then(p=>{if(p==="granted") showTestNotification(); else showNotification('مجوز نوتیفیکیشن داده نشد','error');});}
+                else if(Notification.permission==="granted"){showTestNotification();}
+                else{showNotification('مجوز نوتیفیکیشن داده نشده است','error');}
+            }else{alert("مرورگر شما از Notification پشتیبانی نمی‌کند");}
         }
 
-        // ---------------- Reminder -----------------
-        function checkReminders() {
-            const today = getTodayPersianDate();
-            loans.forEach(loan => {
-                loan.dates.forEach(date => {
-                    if (!date.isPaid && !date.reminded) {
-                        if (date.year === today.year && date.month === today.month && date.day === today.day) {
-                            if ("Notification" in window && Notification.permission === "granted") {
-                                new Notification(`یادآور قسط ${loan.name}`, {
-                                    body: `قسط امروز به مبلغ ${formatNumber(loan.monthlyAmount)} تومان است.`,
-                                    icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-                                });
-                            } else {
-                                showNotification(`یادآور: امروز موعد قسط ${loan.name} (${formatNumber(loan.monthlyAmount)} تومان) است`, 'error');
-                            }
-                            date.reminded = true;
-                        }
-                    }
-                });
-            });
-            saveLoans();
+        function showTestNotification(){
+            new Notification("تست یادآور",{body:"این یک نوتیفیکیشن آزمایشی است",icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png"});
+            showNotification("نوتیفیکیشن تست ارسال شد");
         }
 
-        setInterval(checkReminders, 60 * 1000); // هر دقیقه بررسی
-
-        document.addEventListener('DOMContentLoaded', function() {
-            renderLoans();
-            updateStats();
-
-            document.getElementById('installmentName').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') addInstallment();
-            });
-
-            if ("Notification" in window && Notification.permission !== "granted") {
-                Notification.requestPermission();
-            }
-
-            checkReminders();
-        });
+        // Initial render
+        renderLoans(); updateStats();
     </script>
 </body>
 </html>
