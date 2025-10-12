@@ -243,6 +243,12 @@
             transform: scale(1.05);
         }
         
+        .pay-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .loan-actions {
             display: flex;
             justify-content: space-between;
@@ -360,7 +366,7 @@
             <h3 class="section-title">➕ افزودن وام جدید</h3>
             <div class="add-installment-form">
                 <input type="text" class="form-input" id="installmentName" placeholder="نام وام (مثال: وام مسکن بانک ملت)" required>
-                <input type="text" class="form-input" id="installmentAmount" placeholder="مبلغ وام" oninput="formatAmount(this)" required>
+                <input type="text" class="form-input" id="installmentAmount" placeholder="مبلغ وام (تومان)" required>
                 <input type="number" class="form-input" id="installmentDay" placeholder="روز سررسید (۱-۳۱)" min="1" max="31" required>
                 <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required>
                 <button class="add-btn" onclick="addInstallment()">➕ افزودن وام</button>
@@ -439,17 +445,16 @@
             return new Intl.NumberFormat('fa-IR').format(num);
         }
         
-        // فرمت مبلغ در حین تایپ
-        function formatAmount(input) {
-            let value = input.value.replace(/,/g, '');
-            if (!isNaN(value)) {
-                input.value = formatNumber(parseInt(value || 0));
-            }
+        // تبدیل رشته عددی به عدد (حذف کاما و نقطه)
+        function parseAmount(amountStr) {
+            // حذف همه کاراکترهای غیرعددی به جز اعداد
+            const cleanStr = amountStr.replace(/[^\d]/g, '');
+            return parseInt(cleanStr) || 0;
         }
         
-        // تبدیل مبلغ فرمت شده به عدد
-        function parseFormattedAmount(amountStr) {
-            return parseInt(amountStr.replace(/,/g, ''));
+        // فرمت مبلغ هنگام نمایش
+        function formatAmountDisplay(amount) {
+            return formatNumber(amount) + ' تومان';
         }
         
         // نمایش نوتیفیکیشن
@@ -514,13 +519,20 @@
             const monthsInput = document.getElementById('installmentMonths');
             
             const name = nameInput.value.trim();
-            const amount = parseFormattedAmount(amountInput.value);
+            const amount = parseAmount(amountInput.value);
             const day = parseInt(dayInput.value);
             const remainingMonths = parseInt(monthsInput.value);
             
+            console.log('مبلغ وارد شده:', amountInput.value, 'مبلغ تبدیل شده:', amount);
+            
             // اعتبارسنجی
-            if (!name || !amount || !day || !remainingMonths) {
-                showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+            if (!name) {
+                showNotification('لطفاً نام وام را وارد کنید', 'error');
+                return;
+            }
+            
+            if (amount <= 0) {
+                showNotification('لطفاً مبلغ وام را به درستی وارد کنید', 'error');
                 return;
             }
             
