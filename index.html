@@ -455,16 +455,14 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // داده‌های برنامه
+        // داده‌ها و متغیرها
         let loans = JSON.parse(localStorage.getItem('loans')) || [];
-        
-        // ماه‌های فارسی
+
         const persianMonths = [
             'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
             'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
         ];
-        
-        // تبدیل تاریخ میلادی به شمسی
+
         function gregorianToJalali(gy, gm, gd) {
             let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
             let jy = (gy <= 1600) ? 0 : 979;
@@ -482,8 +480,7 @@
             let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
             return [jy, jm, jd];
         }
-        
-        // دریافت تاریخ امروز به شمسی
+
         function getTodayPersianDate() {
             const today = new Date();
             const [jy, jm, jd] = gregorianToJalali(
@@ -493,19 +490,16 @@
             );
             return { year: jy, month: jm, day: jd, dateStr: `${jy}/${jm}/${jd}` };
         }
-        
-        // فرمت‌بندی عدد با کاما
+
         function formatNumber(num) {
             return new Intl.NumberFormat('fa-IR').format(num);
         }
-        
-        // تبدیل رشته عددی به عدد (حذف کاما و نقطه)
+
         function parseAmount(amountStr) {
             const cleanStr = amountStr.replace(/[^\d]/g, '');
             return parseInt(cleanStr) || 0;
         }
-        
-        // نمایش نوتیفیکیشن
+
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -516,8 +510,7 @@
                 notification.style.display = 'none';
             }, 3000);
         }
-        
-        // محاسبه تاریخ‌های اقساط
+
         function calculateInstallmentDates(day, remainingMonths) {
             const dates = [];
             const today = getTodayPersianDate();
@@ -538,7 +531,8 @@
                     dateStr: `${year}/${month}/${day}`,
                     displayDate: `${day} ${persianMonths[month-1]} ${year}`,
                     isPaid: false,
-                    isOverdue: isDateOverdue(year, month, day)
+                    isOverdue: isDateOverdue(year, month, day),
+                    reminded: false
                 };
                 
                 dates.push(installmentDate);
@@ -546,19 +540,16 @@
             
             return dates;
         }
-        
-        // بررسی اینکه تاریخ سررسید گذشته است یا نه
+
         function isDateOverdue(year, month, day) {
             const today = getTodayPersianDate();
-            
             if (year < today.year) return true;
             if (year === today.year && month < today.month) return true;
             if (year === today.year && month === today.month && day < today.day) return true;
-            
             return false;
         }
-        
-        // افزودن وام جدید
+
+        // -------------- عملکردهای اصلی (add, delete, toggle) و ذخیره ----------------
         function addInstallment() {
             const nameInput = document.getElementById('installmentName');
             const monthlyInput = document.getElementById('installmentMonthly');
@@ -570,26 +561,11 @@
             const day = parseInt(dayInput.value);
             const remainingMonths = parseInt(monthsInput.value);
             
-            if (!name) {
-                showNotification('لطفاً نام وام را وارد کنید', 'error');
-                return;
-            }
-            
-            if (monthlyAmount <= 0) {
-                showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید', 'error');
-                return;
-            }
-            
-            if (day < 1 || day > 31) {
-                showNotification('روز سررسید باید بین ۱ تا ۳۱ باشد', 'error');
-                return;
-            }
-            
-            if (remainingMonths < 1 || remainingMonths > 120) {
-                showNotification('ماه‌های مانده باید بین ۱ تا ۱۲۰ باشد', 'error');
-                return;
-            }
-            
+            if (!name) { showNotification('لطفاً نام وام را وارد کنید', 'error'); return; }
+            if (monthlyAmount <= 0) { showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید', 'error'); return; }
+            if (day < 1 || day > 31) { showNotification('روز سررسید باید بین ۱ تا ۳۱ باشد', 'error'); return; }
+            if (remainingMonths < 1 || remainingMonths > 120) { showNotification('ماه‌های مانده باید بین ۱ تا ۱۲۰ باشد', 'error'); return; }
+
             const installmentDates = calculateInstallmentDates(day, remainingMonths);
             const totalRemainingAmount = monthlyAmount * remainingMonths;
             
@@ -616,8 +592,7 @@
             
             showNotification('وام جدید با موفقیت اضافه شد');
         }
-        
-        // حذف وام
+
         function deleteLoan(id) {
             if (confirm('آیا از حذف این وام مطمئن هستید؟')) {
                 loans = loans.filter(loan => loan.id !== id);
@@ -627,8 +602,7 @@
                 showNotification('وام با موفقیت حذف شد');
             }
         }
-        
-        // تغییر وضعیت پرداخت قسط
+
         function togglePayment(loanId, dateIndex, status) {
             const loan = loans.find(loan => loan.id === loanId);
             if (loan) {
@@ -647,13 +621,11 @@
                 showNotification(`قسط به عنوان ${action} علامت‌گذاری شد`);
             }
         }
-        
-        // نمایش وام‌ها
+
         function renderLoans() {
-            const installmentsContainer = document.getElementById('installmentsContainer');
-            
+            const container = document.getElementById('installmentsContainer');
             if (loans.length === 0) {
-                installmentsContainer.innerHTML = `
+                container.innerHTML = `
                     <div class="empty-state">
                         <i>💳</i>
                         <h3>هیچ وامی ثبت نشده است</h3>
@@ -662,46 +634,31 @@
                 `;
                 return;
             }
-            
-            installmentsContainer.innerHTML = '';
-            
+            container.innerHTML = '';
             loans.forEach(loan => {
-                const loanCard = document.createElement('div');
-                loanCard.className = 'loan-card';
+                const card = document.createElement('div');
+                card.className = 'loan-card';
                 
                 let installmentsHTML = '';
                 loan.dates.forEach((date, index) => {
-                    let rowClass = '';
-                    if (date.isPaid) {
-                        rowClass = 'paid';
-                    } else if (date.isOverdue) {
-                        rowClass = 'overdue';
-                    } else {
-                        rowClass = 'upcoming';
-                    }
-                    
+                    let rowClass = date.isPaid ? 'paid' : (date.isOverdue ? 'overdue' : 'upcoming');
                     installmentsHTML += `
                         <div class="installment-row ${rowClass}">
                             <div class="installment-date">${date.displayDate}</div>
                             <div class="installment-amount">${formatNumber(loan.monthlyAmount)}</div>
                             <div class="payment-buttons">
-                                <button class="pay-btn paid" onclick="togglePayment(${loan.id}, ${index}, true)" ${date.isPaid ? 'disabled' : ''}>
-                                    پرداخت شد
-                                </button>
-                                <button class="pay-btn unpaid" onclick="togglePayment(${loan.id}, ${index}, false)" ${!date.isPaid ? 'disabled' : ''}>
-                                    پرداخت نشد
-                                </button>
+                                <button class="pay-btn paid" onclick="togglePayment(${loan.id}, ${index}, true)" ${date.isPaid ? 'disabled' : ''}>پرداخت شد</button>
+                                <button class="pay-btn unpaid" onclick="togglePayment(${loan.id}, ${index}, false)" ${!date.isPaid ? 'disabled' : ''}>پرداخت نشد</button>
                             </div>
                         </div>
                     `;
                 });
-                
-                loanCard.innerHTML = `
+
+                card.innerHTML = `
                     <div class="loan-header">
                         <div class="loan-title">${loan.name}</div>
                         <div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div>
                     </div>
-                    
                     <div class="loan-details">
                         <div class="detail-item">
                             <div class="detail-label">قسط ماهیانه</div>
@@ -720,11 +677,7 @@
                             <div class="detail-value">${formatNumber(loan.totalRemainingAmount)} تومان</div>
                         </div>
                     </div>
-                    
-                    <div class="installments-list">
-                        ${installmentsHTML}
-                    </div>
-                    
+                    <div class="installments-list">${installmentsHTML}</div>
                     <div class="loan-actions">
                         <button class="delete-btn" onclick="deleteLoan(${loan.id})">🗑️ حذف وام</button>
                         <div class="loan-status ${loan.isActive ? 'status-active' : 'status-completed'}">
@@ -732,93 +685,68 @@
                         </div>
                     </div>
                 `;
-                
-                installmentsContainer.appendChild(loanCard);
+                container.appendChild(card);
             });
         }
-        
-        // به‌روزرسانی آمار
+
         function updateStats() {
             const totalLoans = loans.length;
-            const totalRemaining = loans.reduce((sum, loan) => {
-                return sum + loan.totalRemainingAmount;
-            }, 0);
-            
+            const totalRemaining = loans.reduce((sum, loan) => sum + loan.totalRemainingAmount, 0);
             let upcomingCount = 0;
             let overdueCount = 0;
-            
+
             loans.forEach(loan => {
                 loan.dates.forEach(date => {
                     if (!date.isPaid) {
-                        if (date.isOverdue) {
-                            overdueCount++;
-                        } else {
-                            upcomingCount++;
-                        }
+                        if (date.isOverdue) overdueCount++;
+                        else upcomingCount++;
                     }
                 });
             });
-            
+
             document.getElementById('totalLoans').textContent = formatNumber(totalLoans);
             document.getElementById('upcomingCount').textContent = formatNumber(upcomingCount);
             document.getElementById('overdueCount').textContent = formatNumber(overdueCount);
             document.getElementById('totalRemaining').textContent = formatNumber(totalRemaining);
         }
-        
-        // ذخیره وام‌ها در localStorage
+
         function saveLoans() {
             localStorage.setItem('loans', JSON.stringify(loans));
-            console.log('داده‌ها در localStorage ذخیره شد:', loans);
         }
-        
-        // خروجی گرفتن از داده‌ها
+
         function exportData() {
-            const dataStr = JSON.stringify(loans, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
+            const blob = new Blob([JSON.stringify(loans, null, 2)], { type: 'application/json' });
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
+            link.href = URL.createObjectURL(blob);
             link.download = `installments_backup_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
-            
             showNotification('داده‌ها با موفقیت export شدند');
         }
-        
-        // وارد کردن داده‌ها
+
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedLoans = JSON.parse(e.target.result);
-                    
-                    // اعتبارسنجی داده‌های وارد شده
-                    if (Array.isArray(importedLoans) && importedLoans.every(loan => 
-                        loan.name && loan.monthlyAmount && loan.day && loan.remainingMonths
-                    )) {
-                        if (confirm(`آیا می‌خواهید ${importedLoans.length} وام وارد کنید؟ داده‌های فعلی جایگزین می‌شوند.`)) {
-                            loans = importedLoans;
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported) && imported.every(l => l.name && l.monthlyAmount && l.day && l.remainingMonths)) {
+                        if (confirm(`آیا می‌خواهید ${imported.length} وام وارد کنید؟ داده‌های فعلی جایگزین می‌شوند.`)) {
+                            loans = imported;
                             saveLoans();
                             renderLoans();
                             updateStats();
                             showNotification('داده‌ها با موفقیت import شدند');
                         }
-                    } else {
-                        showNotification('فایل انتخاب شده معتبر نیست', 'error');
-                    }
-                } catch (error) {
+                    } else showNotification('فایل انتخاب شده معتبر نیست', 'error');
+                } catch {
                     showNotification('خطا در خواندن فایل', 'error');
                 }
             };
             reader.readAsText(file);
-            
-            // ریست کردن input فایل
             event.target.value = '';
         }
-        
-        // حذف همه داده‌ها
+
         function clearAllData() {
             if (confirm('آیا از حذف تمام داده‌ها مطمئن هستید؟ این عمل قابل بازگشت نیست!')) {
                 loans = [];
@@ -828,17 +756,45 @@
                 showNotification('تمامی داده‌ها حذف شدند');
             }
         }
-        
-        // راه‌اندازی اولیه
+
+        // ---------------- Reminder -----------------
+        function checkReminders() {
+            const today = getTodayPersianDate();
+            loans.forEach(loan => {
+                loan.dates.forEach(date => {
+                    if (!date.isPaid && !date.reminded) {
+                        if (date.year === today.year && date.month === today.month && date.day === today.day) {
+                            if ("Notification" in window && Notification.permission === "granted") {
+                                new Notification(`یادآور قسط ${loan.name}`, {
+                                    body: `قسط امروز به مبلغ ${formatNumber(loan.monthlyAmount)} تومان است.`,
+                                    icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
+                                });
+                            } else {
+                                showNotification(`یادآور: امروز موعد قسط ${loan.name} (${formatNumber(loan.monthlyAmount)} تومان) است`, 'error');
+                            }
+                            date.reminded = true;
+                        }
+                    }
+                });
+            });
+            saveLoans();
+        }
+
+        setInterval(checkReminders, 60 * 1000); // هر دقیقه بررسی
+
         document.addEventListener('DOMContentLoaded', function() {
             renderLoans();
             updateStats();
-            
+
             document.getElementById('installmentName').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    addInstallment();
-                }
+                if (e.key === 'Enter') addInstallment();
             });
+
+            if ("Notification" in window && Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+
+            checkReminders();
         });
     </script>
 </body>
