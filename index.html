@@ -5,63 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدیریت اقساط - آریو مقتدر</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', Tahoma, sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; padding: 20px; direction: rtl; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .creator { font-size: 1rem; opacity: 0.9; margin-top: 10px; }
-        .main-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); margin-bottom: 20px; }
-        .add-installment-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; margin-bottom: 30px; padding: 25px; background: #f8f9fa; border-radius: 15px; }
-        @media (max-width: 768px) { .add-installment-form { grid-template-columns: 1fr; } }
-        .form-input { padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 14px; transition: all 0.3s; }
-        .form-input:focus { outline: none; border-color: #4c6ef5; box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1); }
-        .add-btn, .data-btn { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s; white-space: nowrap; }
-        .add-btn { background: #40c057; color: white; }
-        .add-btn:hover { background: #2f9e44; transform: translateY(-2px); }
-        .installments-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-top: 20px; }
-        .loan-card { background: white; border-radius: 15px; padding: 20px; border-left: 5px solid #4c6ef5; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: all 0.3s; }
-        .loan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        .loan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f8f9fa; }
-        .loan-title { font-size: 18px; font-weight: bold; color: #2c3e50; }
-        .loan-amount { font-size: 20px; font-weight: bold; color: #e03131; direction: ltr; text-align: left; }
-        .loan-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .detail-item { background: #f8f9fa; padding: 10px; border-radius: 8px; text-align: center; }
-        .detail-label { font-size: 11px; color: #6c757d; margin-bottom: 5px; }
-        .detail-value { font-size: 14px; font-weight: bold; color: #495057; }
-        .installments-list { margin-top: 15px; }
-        .installment-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; padding: 10px; margin-bottom: 8px; background: #f8f9fa; border-radius: 8px; align-items: center; transition: all 0.3s; }
-        .installment-row.upcoming { background: #fff3cd; border-right: 3px solid #ffc107; }
-        .installment-row.overdue { background: #ffe3e3; border-right: 3px solid #fa5252; }
-        .installment-row.paid { background: #d3f9d8; border-right: 3px solid #40c057; opacity: 0.8; }
-        .installment-date { font-size: 13px; font-weight: 500; }
-        .installment-amount { font-size: 14px; font-weight: bold; color: #495057; direction: ltr; text-align: left; }
-        .payment-buttons { display: flex; gap: 5px; }
-        .pay-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.3s; }
-        .pay-btn.paid { background: #40c057; color: white; }
-        .pay-btn.unpaid { background: #fa5252; color: white; }
-        .pay-btn:hover { transform: scale(1.05); }
-        .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .loan-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 2px solid #f8f9fa; }
-        .delete-btn { background: #fa5252; color: white; border: none; border-radius: 6px; padding: 8px 15px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
-        .delete-btn:hover { background: #e03131; transform: scale(1.05); }
-        .loan-status { font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 15px; }
-        .status-active { background: #fff3cd; color: #856404; }
-        .status-completed { background: #d3f9d8; color: #0f5132; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #6c757d; grid-column: 1 / -1; }
-        .empty-state i { font-size: 80px; margin-bottom: 20px; display: block; color: #adb5bd; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .stat-value { font-size: 1.8rem; font-weight: bold; color: #4c6ef5; margin-bottom: 5px; }
-        .stat-label { color: #6c757d; font-size: 14px; }
-        .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #40c057; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; display: none; }
-        .section-title { font-size: 1.5rem; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f8f9fa; }
-        .data-management { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 15px; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 15px; }
-        .export-btn { background: #4c6ef5; color: white; }
-        .import-btn { background: #ff922b; color: white; }
-        .clear-btn { background: #fa5252; color: white; }
-        .data-btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .file-input { display: none; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Vazir',Tahoma,sans-serif;}
+        body { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#333; min-height:100vh; padding:20px; direction:rtl;}
+        .container { max-width:1000px; margin:0 auto;}
+        header { text-align:center; margin-bottom:30px; color:white; text-shadow:0 2px 5px rgba(0,0,0,0.3);}
+        h1 { font-size:2.5rem; margin-bottom:10px;}
+        .creator { font-size:1rem; opacity:0.9; margin-top:10px;}
+        .main-card { background:white; border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.2); margin-bottom:20px;}
+        .add-installment-form { display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; gap:12px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
+        @media(max-width:768px){.add-installment-form{grid-template-columns:1fr;}}
+        .form-input { padding:12px 15px; border:2px solid #e9ecef; border-radius:10px; font-size:14px; transition:all 0.3s;}
+        .form-input:focus { outline:none; border-color:#4c6ef5; box-shadow:0 0 0 3px rgba(76,110,245,0.1);}
+        .add-btn { background:#40c057; color:white; border:none; border-radius:10px; padding:12px 20px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s; white-space:nowrap;}
+        .add-btn:hover { background:#2f9e44; transform:translateY(-2px);}
+        .installments-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:20px; margin-top:20px;}
+        .loan-card { background:white; border-radius:15px; padding:20px; border-left:5px solid #4c6ef5; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:all 0.3s;}
+        .loan-card:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+        .loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
+        .loan-title { font-size:18px; font-weight:bold; color:#2c3e50;}
+        .loan-amount { font-size:20px; font-weight:bold; color:#e03131; direction:ltr; text-align:left;}
+        .loan-details { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;}
+        .detail-item { background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;}
+        .detail-label { font-size:11px; color:#6c757d; margin-bottom:5px;}
+        .detail-value { font-size:14px; font-weight:bold; color:#495057;}
+        .installments-list { margin-top:15px;}
+        .installment-row { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; padding:10px; margin-bottom:8px; background:#f8f9fa; border-radius:8px; align-items:center; transition:all 0.3s;}
+        .installment-row.upcoming { background:#fff3cd; border-right:3px solid #ffc107;}
+        .installment-row.overdue { background:#ffe3e3; border-right:3px solid #fa5252;}
+        .installment-row.paid { background:#d3f9d8; border-right:3px solid #40c057; opacity:0.8;}
+        .installment-date { font-size:13px; font-weight:500;}
+        .installment-amount { font-size:14px; font-weight:bold; color:#495057; direction:ltr; text-align:left;}
+        .payment-buttons { display:flex; gap:5px;}
+        .pay-btn { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; transition:all 0.3s;}
+        .pay-btn.paid { background:#40c057; color:white;}
+        .pay-btn.unpaid { background:#fa5252; color:white;}
+        .pay-btn:hover { transform:scale(1.05);}
+        .pay-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none;}
+        .loan-actions { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:2px solid #f8f9fa;}
+        .delete-btn { background:#fa5252; color:white; border:none; border-radius:6px; padding:8px 15px; cursor:pointer; font-size:12px; transition:all 0.3s;}
+        .delete-btn:hover { background:#e03131; transform:scale(1.05);}
+        .loan-status { font-size:12px; font-weight:bold; padding:5px 10px; border-radius:15px;}
+        .status-active { background:#fff3cd; color:#856404;}
+        .status-completed { background:#d3f9d8; color:#0f5132;}
+        .empty-state { text-align:center; padding:60px 20px; color:#6c757d; grid-column:1 / -1;}
+        .empty-state i { font-size:80px; margin-bottom:20px; display:block; color:#adb5bd;}
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-top:30px;}
+        .stat-card { background:white; padding:20px; border-radius:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+        .stat-value { font-size:1.8rem; font-weight:bold; color:#4c6ef5; margin-bottom:5px;}
+        .stat-label { color:#6c757d; font-size:14px;}
+        .notification { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#40c057; color:white; padding:15px 25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; display:none;}
+        .section-title { font-size:1.5rem; color:#2c3e50; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
+        .data-management { display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:15px;}
+        .data-btn { padding:12px 20px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s;}
+        .export-btn { background:#4c6ef5; color:white;}
+        .import-btn { background:#ff922b; color:white;}
+        .clear-btn { background:#fa5252; color:white;}
+        .data-btn:hover { transform:translateY(-2px); opacity:0.9;}
+        .file-input { display:none;}
     </style>
 </head>
 <body>
@@ -89,7 +89,7 @@
             <button class="data-btn export-btn" onclick="exportData()">📥 خروجی گرفتن</button>
             <button class="data-btn import-btn" onclick="document.getElementById('importFile').click()">📤 وارد کردن</button>
             <button class="data-btn clear-btn" onclick="clearAllData()">🗑️ حذف همه داده‌ها</button>
-            <button class="data-btn export-btn" onclick="testNotification()">🛎️ تست نوتیفیکیشن</button>
+            <button class="data-btn export-btn" onclick="testNotificationCheckDue()">🛎️ تست نوتیفیکیشن</button>
             <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(event)">
         </div>
 
@@ -103,46 +103,120 @@
 </div>
 
 <div class="notification" id="notification"></div>
+<audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
 <script>
-let loans = JSON.parse(localStorage.getItem('loans')) || [];
-const persianMonths = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-const alarmSound = new Audio('https://www.soundjay.com/button/beep-07.wav');
+let loans = JSON.parse(localStorage.getItem('loans'))||[];
+const persianMonths=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 
-function gregorianToJalali(gy, gm, gd){
-    let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334]; let jy=(gy<=1600)?0:979; gy-=(gy<=1600)?621:1600; let gy2=(gm>2)?(gy+1):gy;
-    let days=(365*gy)+parseInt((gy2+3)/4)-parseInt((gy2+99)/100)+parseInt((gy2+399)/400)-80+gd+g_d_m[gm-1];
-    jy+=33*parseInt(days/12053); days%=12053; jy+=4*parseInt(days/1461); days%=1461; jy+=parseInt((days-1)/365); if(days>365)days=(days-1)%365;
-    let jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30); let jd=1+((days<186)?days%31:(days-186)%30); return [jy,jm,jd];
+function gregorianToJalali(gy,gm,gd){
+    let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334]; let jy=(gy<=1600)?0:979; gy-=(gy<=1600)?621:1600; let gy2=(gm>2)?(gy+1):gy; let days=(365*gy)+parseInt((gy2+3)/4)-parseInt((gy2+99)/100)+parseInt((gy2+399)/400)-80+gd+g_d_m[gm-1]; jy+=33*parseInt(days/12053); days%=12053; jy+=4*parseInt(days/1461); days%=1461; jy+=parseInt((days-1)/365); if(days>365) days=(days-1)%365; let jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30); let jd=1+((days<186)?(days%31):((days-186)%30)); return [jy,jm,jd];
+}
+function getTodayPersianDate(){ const today=new Date(); const [jy,jm,jd]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate()); return {year:jy,month:jm,day:jd,dateStr:`${jy}/${jm}/${jd}`};}
+function formatNumber(num){ return new Intl.NumberFormat('fa-IR').format(num);}
+function parseAmount(str){ return parseInt(str.replace(/[^\d]/g,''))||0;}
+function showNotification(msg,type='success'){ const n=document.getElementById('notification'); n.textContent=msg; n.style.background=type==='success'?'#40c057':'#fa5252'; n.style.display='block'; setTimeout(()=>{ n.style.display='none'; },3000);}
+function showNotificationWithSound(title,body){ const sound=document.getElementById('notifSound'); if("Notification" in window && Notification.permission==="granted"){ for(let i=0;i<5;i++){ new Notification(title,{body:body,icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png"}); sound.play(); } } else { for(let i=0;i<5;i++){ showNotification(`${title}: ${body}`,'error'); sound.play(); } }}
+
+// تاریخ‌های قسط
+function calculateInstallmentDates(day,months){
+    const dates=[]; const today=getTodayPersianDate();
+    for(let i=0;i<months;i++){
+        let year=today.year; let month=today.month+i;
+        while(month>12){ month-=12; year+=1; }
+        const installmentDate={ year:year, month:month, day:day, dateStr:`${year}/${month}/${day}`, displayDate:`${day} ${persianMonths[month-1]} ${year}`, isPaid:false, isOverdue:isDateOverdue(year,month,day) };
+        dates.push(installmentDate);
+    }
+    return dates;
+}
+function isDateOverdue(y,m,d){ const t=getTodayPersianDate(); if(y<t.year)return true; if(y===t.year && m<t.month)return true; if(y===t.year && m===t.month && d<t.day)return true; return false;}
+
+// افزودن وام
+function addInstallment(){
+    const name=document.getElementById('installmentName').value.trim();
+    const monthly=parseAmount(document.getElementById('installmentMonthly').value);
+    const day=parseInt(document.getElementById('installmentDay').value);
+    const months=parseInt(document.getElementById('installmentMonths').value);
+    if(!name){ showNotification('لطفاً نام وام را وارد کنید','error'); return;}
+    if(monthly<=0){ showNotification('مبلغ قسط اشتباه است','error'); return;}
+    if(day<1 || day>31){ showNotification('روز سررسید ۱ تا ۳۱','error'); return;}
+    if(months<1 || months>120){ showNotification('ماه‌های مانده ۱ تا ۱۲۰','error'); return;}
+    const installmentDates=calculateInstallmentDates(day,months);
+    loans.push({ id:Date.now(), name:name, monthlyAmount:monthly, totalRemainingAmount:monthly*months, day:day, remainingMonths:months, dates:installmentDates, createdAt:new Date().toISOString(), isActive:true });
+    saveLoans(); renderLoans(); updateStats();
+    document.getElementById('installmentName').value=''; document.getElementById('installmentMonthly').value=''; document.getElementById('installmentDay').value=''; document.getElementById('installmentMonths').value='';
+    showNotification('وام جدید اضافه شد');
 }
 
-function getTodayPersianDate(){const today=new Date();const [jy,jm,jd]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate()); return {year:jy,month:jm,day:jd,dateStr:`${jy}/${jm}/${jd}`};}
-function formatNumber(num){return new Intl.NumberFormat('fa-IR').format(num);}
-function parseAmount(amountStr){return parseInt(amountStr.replace(/[^\d]/g,''))||0;}
-function showNotification(message,type='success'){const n=document.getElementById('notification');n.textContent=message;n.style.background=type==='success'?'#40c057':'#fa5252';n.style.display='block';setTimeout(()=>{n.style.display='none';},3000);}
-function saveLoans(){localStorage.setItem('loans',JSON.stringify(loans));}
-function calculateInstallmentDates(day, remainingMonths){const dates=[];const today=getTodayPersianDate();for(let i=0;i<remainingMonths;i++){let year=today.year;let month=today.month+i;while(month>12){month-=12;year++;}const installmentDate={year:year,month:month,day:day,dateStr:`${year}/${month}/${day}`,displayDate:`${day} ${persianMonths[month-1]} ${year}`,isPaid:false,isOverdue:isDateOverdue(year,month,day)};dates.push(installmentDate);}return dates;}
-function isDateOverdue(year,month,day){const today=getTodayPersianDate();if(year<today.year)return true;if(year===today.year&&month<today.month)return true;if(year===today.year&&month===today.month&&day<today.day)return true;return false;}
-function addInstallment(){const n=document.getElementById('installmentName').value.trim();const m=parseAmount(document.getElementById('installmentMonthly').value);const d=parseInt(document.getElementById('installmentDay').value);const rm=parseInt(document.getElementById('installmentMonths').value);if(!n){showNotification('لطفاً نام وام را وارد کنید','error');return;}if(m<=0){showNotification('لطفاً مبلغ قسط ماهیانه را به درستی وارد کنید','error');return;}if(d<1||d>31){showNotification('روز سررسید باید بین ۱ تا ۳۱ باشد','error');return;}if(rm<1||rm>120){showNotification('ماه‌های مانده باید بین ۱ تا ۱۲۰ باشد','error');return;}const dates=calculateInstallmentDates(d,rm);loans.push({id:Date.now(),name:n,monthlyAmount:m,totalRemainingAmount:m*rm,day:d,remainingMonths:rm,dates:dates,createdAt:new Date().toISOString(),isActive:true});saveLoans();renderLoans();updateStats();document.getElementById('installmentName').value='';document.getElementById('installmentMonthly').value='';document.getElementById('installmentDay').value='';document.getElementById('installmentMonths').value='';showNotification('وام جدید با موفقیت اضافه شد');}
-function deleteLoan(id){if(confirm('آیا از حذف این وام مطمئن هستید؟')){loans=loans.filter(l=>l.id!==id);saveLoans();renderLoans();updateStats();showNotification('وام با موفقیت حذف شد');}}
-function togglePayment(loanId,dateIndex,status){const loan=loans.find(l=>l.id===loanId);if(loan){loan.dates[dateIndex].isPaid=status;const unpaidCount=loan.dates.filter(d=>!d.isPaid).length;loan.remainingMonths=unpaidCount;loan.totalRemainingAmount=loan.monthlyAmount*unpaidCount;loan.isActive=unpaidCount>0;saveLoans();renderLoans();updateStats();showNotification(`قسط به عنوان ${status?'پرداخت شده':'پرداخت نشد'} علامت‌گذاری شد`);}}
-function renderLoans(){const c=document.getElementById('installmentsContainer');if(loans.length===0){c.innerHTML='<div class="empty-state"><i>💳</i><h3>هیچ وامی ثبت نشده است</h3><p>وام اول خود را اضافه کنید تا شروع کنیم</p></div>';return;}c.innerHTML='';loans.forEach(l=>{let html='';l.dates.forEach((d,i)=>{let cls=d.isPaid?'paid':d.isOverdue?'overdue':'upcoming'; html+=`<div class="installment-row ${cls}"><div class="installment-date">${d.displayDate}</div><div class="installment-amount">${formatNumber(l.monthlyAmount)}</div><div class="payment-buttons"><button class="pay-btn ${d.isPaid?'paid':'unpaid'}" onclick="togglePayment(${l.id},${i},!${d.isPaid})">${d.isPaid?'پرداخت شده':'پرداخت نشده'}</button></div></div>`;});c.innerHTML+=`<div class="loan-card"><div class="loan-header"><div class="loan-title">${l.name}</div><div class="loan-amount">${formatNumber(l.totalRemainingAmount)} تومان</div></div><div class="installments-list">${html}</div><div class="loan-actions"><span class="loan-status ${l.isActive?'status-active':'status-completed'}">${l.isActive?'فعال':'تکمیل شده'}</span><button class="delete-btn" onclick="deleteLoan(${l.id})">حذف وام</button></div></div>`;});}
-function updateStats(){const totalLoans=loans.length;let upcomingCount=0;let overdueCount=0;let totalRemaining=0;loans.forEach(l=>{l.dates.forEach(d=>{if(!d.isPaid&&!d.isOverdue)upcomingCount++;if(!d.isPaid&&d.isOverdue)overdueCount++;});totalRemaining+=l.totalRemainingAmount;});document.getElementById('totalLoans').textContent=totalLoans;document.getElementById('upcomingCount').textContent=upcomingCount;document.getElementById('overdueCount').textContent=overdueCount;document.getElementById('totalRemaining').textContent=formatNumber(totalRemaining);}
-function exportData(){const dataStr=JSON.stringify(loans,null,2);const blob=new Blob([dataStr],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='loans_data.json';document.body.appendChild(a);a.click();document.body.removeChild(a);}
-function importData(event){const file=event.target.files[0];if(file){const reader=new FileReader();reader.onload=function(e){try{loans=JSON.parse(e.target.result);saveLoans();renderLoans();updateStats();showNotification('داده‌ها با موفقیت وارد شدند');}catch(err){showNotification('فایل معتبر نیست','error');}};reader.readAsText(file);}}
-function clearAllData(){if(confirm('آیا مطمئن هستید که همه داده‌ها حذف شود؟')){loans=[];saveLoans();renderLoans();updateStats();showNotification('همه داده‌ها حذف شدند');}}
-if("Notification" in window&&Notification.permission!=="granted"){Notification.requestPermission();}
+// حذف وام
+function deleteLoan(id){ if(confirm('آیا از حذف این وام مطمئن هستید؟')){ loans=loans.filter(l=>l.id!==id); saveLoans(); renderLoans(); updateStats(); showNotification('وام حذف شد');}}
 
-function showNotificationWithSound(title,message){for(let i=0;i<5;i++){setTimeout(()=>{if("Notification"in window&&Notification.permission==="granted"){new Notification(title,{body:message,icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png"});}else{showNotification(`${title}: ${message}`,'error');}alarmSound.play().catch(()=>{});},i*1000);}}
-function notifyDueInstallmentsWithSound(){const today=getTodayPersianDate();loans.forEach(loan=>{loan.dates.forEach(date=>{if(!date.isPaid&&!date.reminded){if(date.year===today.year&&date.month===today.month&&date.day===today.day){showNotificationWithSound(`یادآور قسط ${loan.name}`,`قسط امروز به مبلغ ${formatNumber(loan.monthlyAmount)} تومان است.`);date.reminded=true;}}const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);const [ty,tm,td]=gregorianToJalali(tomorrow.getFullYear(),tomorrow.getMonth()+1,tomorrow.getDate());if(!date.isPaid&&!date.remindedTomorrow){if(date.year===ty&&date.month===tm&&date.day===td){showNotificationWithSound(`یادآور قسط فردا: ${loan.name}`,`فردا موعد قسط ${formatNumber(loan.monthlyAmount)} تومان است.`);date.remindedTomorrow=true;}}});});saveLoans();}
+// پرداخت قسط
+function togglePayment(loanId,dateIndex,status){ const loan=loans.find(l=>l.id===loanId); if(loan){ loan.dates[dateIndex].isPaid=status; const unpaidCount=loan.dates.filter(d=>!d.isPaid).length; loan.remainingMonths=unpaidCount; loan.totalRemainingAmount=loan.monthlyAmount*unpaidCount; loan.isActive=unpaidCount>0; saveLoans(); renderLoans(); updateStats(); showNotification(`قسط ${status?'پرداخت شد':'پرداخت نشد'}`);}}
 
-function testNotification(){showNotificationWithSound('💳 تست نوتیفیکیشن','این یک هشدار تست است و ۵ بار پخش خواهد شد');}
+// نمایش وام‌ها
+function renderLoans(){ const container=document.getElementById('installmentsContainer'); if(loans.length===0){ container.innerHTML=`<div class="empty-state"><i>💳</i><h3>هیچ وامی ثبت نشده است</h3><p>وام اول خود را اضافه کنید</p></div>`; return;}
+container.innerHTML=''; loans.forEach(loan=>{ let installmentsHTML=''; loan.dates.forEach((d,i)=>{ let rowClass=d.isPaid?'paid':d.isOverdue?'overdue':'upcoming'; installmentsHTML+=`<div class="installment-row ${rowClass}"><div class="installment-date">${d.displayDate}</div><div class="installment-amount">${formatNumber(loan.monthlyAmount)}</div><div class="payment-buttons"><button class="pay-btn ${d.isPaid?'paid':'unpaid'}" onclick="togglePayment(${loan.id},${i},${!d.isPaid})">${d.isPaid?'پرداخت شد':'پرداخت نشده'}</button></div></div>`;}); 
+container.innerHTML+=`<div class="loan-card"><div class="loan-header"><div class="loan-title">${loan.name}</div><div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div></div><div class="loan-details"><div class="detail-item"><div class="detail-label">کل قسط‌ها</div><div class="detail-value">${loan.dates.length}</div></div><div class="detail-item"><div class="detail-label">مانده</div><div class="detail-value">${loan.remainingMonths}</div></div></div><div class="installments-list">${installmentsHTML}</div><div class="loan-actions"><span class="loan-status ${loan.isActive?'status-active':'status-completed'}">${loan.isActive?'فعال':'اتمام'}</span><button class="delete-btn" onclick="deleteLoan(${loan.id})">حذف وام</button></div></div>`; });}
 
-setInterval(notifyDueInstallmentsWithSound,30*60*1000);
+// مدیریت داده‌ها
+function saveLoans(){ localStorage.setItem('loans',JSON.stringify(loans)); }
+function exportData(){ const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(loans)); const dlAnchor=document.createElement('a'); dlAnchor.setAttribute("href",dataStr); dlAnchor.setAttribute("download","loans.json"); dlAnchor.click();}
+function importData(event){ const file=event.target.files[0]; const reader=new FileReader(); reader.onload=function(e){ try{ loans=JSON.parse(e.target.result); saveLoans(); renderLoans(); updateStats(); showNotification('داده‌ها وارد شدند'); }catch(err){ showNotification('خطا در وارد کردن فایل','error'); }}; reader.readAsText(file);}
+function clearAllData(){ if(confirm('آیا مطمئن هستید؟ همه داده‌ها حذف شوند؟')){ loans=[]; saveLoans(); renderLoans(); updateStats(); showNotification('همه داده‌ها حذف شدند');}}
+
+// آمار
+function updateStats(){ const totalLoans=loans.length; let upcomingCount=0; let overdueCount=0; let totalRemaining=0; loans.forEach(loan=>{ loan.dates.forEach(d=>{ if(!d.isPaid){ const t=getTodayPersianDate(); if(d.year>t.year||(d.year===t.year && d.month>t.month)||(d.year===t.year && d.month===t.month && d.day>=t.day)) upcomingCount++; if(d.isOverdue && !d.isPaid) overdueCount++; totalRemaining+=loan.monthlyAmount; } });}); document.getElementById('totalLoans').textContent=totalLoans; document.getElementById('upcomingCount').textContent=upcomingCount; document.getElementById('overdueCount').textContent=overdueCount; document.getElementById('totalRemaining').textContent=formatNumber(totalRemaining);}
+
+// بررسی نوتیفیکیشن قسط‌ها
+function checkInstallmentNotifications(){
+    const today=getTodayPersianDate();
+    const tomorrowDate=new Date(); tomorrowDate.setDate(tomorrowDate.getDate()+1);
+    const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
+    loans.forEach(loan=>{
+        loan.dates.forEach(date=>{
+            if(!date.isPaid){
+                if(date.year===today.year && date.month===today.month && date.day===today.day){
+                    showNotificationWithSound(`💳 قسط امروز: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
+                }
+                if(date.year===ty && date.month===tm && date.day===td){
+                    showNotificationWithSound(`💳 قسط فردا: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
+                }
+            }
+        });
+    });
+}
+
+// دکمه تست نوتیفیکیشن
+function testNotificationCheckDue(){
+    const today=getTodayPersianDate();
+    const tomorrowDate=new Date(); tomorrowDate.setDate(tomorrowDate.getDate()+1);
+    const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
+    let hasDue=false;
+    loans.forEach(loan=>{
+        loan.dates.forEach(date=>{
+            if(!date.isPaid){
+                if((date.year===today.year && date.month===today.month && date.day===today.day) ||
+                   (date.year===ty && date.month===tm && date.day===td)){
+                    hasDue=true;
+                    showNotificationWithSound(`💳 موعد قسط: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
+                }
+            }
+        });
+    });
+    if(!hasDue){
+        showNotificationWithSound('💳 هیچ قسطی امروز یا فردا نیست','موعدی وجود ندارد');
+    }
+}
+
+// درخواست دسترسی نوتیفیکیشن
+if("Notification" in window && Notification.permission!=="granted"){ Notification.requestPermission(); }
+
+// بررسی هر ۳۰ دقیقه
+setInterval(checkInstallmentNotifications,30*60*1000);
 
 renderLoans();
 updateStats();
-notifyDueInstallmentsWithSound();
 </script>
 </body>
 </html>
