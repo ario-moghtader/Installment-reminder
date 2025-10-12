@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>یادآور اقساط - آریو مقتدر</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', Tahoma, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .creator {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .add-installment-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .add-installment-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-input {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #4c6ef5;
+            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
+        }
+        
+        .add-btn {
+            background: #40c057;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .add-btn:hover {
+            background: #2f9e44;
+            transform: translateY(-2px);
+        }
+        
+        .installments-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .installment-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-right: 5px solid #4c6ef5;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .installment-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .installment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .installment-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .installment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .delete-btn {
+            background: #fa5252;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #e03131;
+            transform: scale(1.05);
+        }
+        
+        .installment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .upcoming {
+            border-right-color: #ff6b6b;
+            background: #fff5f5;
+        }
+        
+        .paid {
+            border-right-color: #40c057;
+            background: #f8fff9;
+            opacity: 0.7;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            color: #adb5bd;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4c6ef5;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #40c057;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💳 یادآور اقساط</h1>
+            <p class="creator">برنامه مدیریت اقساط ماهانه - طراحی شده توسط آریو مقتدر</p>
+        </header>
+        
+        <div class="main-card">
+            <div class="add-installment-form">
+                <input type="text" class="form-input" id="installmentName" placeholder="نام قسط (مثال: وام بانک)" required>
+                <input type="number" class="form-input" id="installmentAmount" placeholder="مبلغ (تومان)" min="0" required>
+                <input type="number" class="form-input" id="installmentDay" placeholder="روز ماه (۱-۳۱)" min="1" max="31" required>
+                <input type="number" class="form-input" id="installmentMonths" placeholder="تعداد ماه‌ها" min="1" max="120" required>
+                <button class="add-btn" onclick="addInstallment()">➕ افزودن قسط</button>
+            </div>
+            
+            <div class="installments-list" id="installmentsList">
+                <!-- لیست اقساط اینجا نمایش داده می‌شود -->
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalInstallments">0</div>
+                    <div class="stat-label">کل اقساط</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="upcomingCount">0</div>
+                    <div class="stat-label">قسط‌های پیش‌رو</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAmount">0</div>
+                    <div class="stat-label">مجموع مبالغ (تومان)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // داده‌های برنامه
+        let installments = JSON.parse(localStorage.getItem('installments')) || [];
+        
+        // ماه‌های فارسی
+        const persianMonths = [
+            'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+            'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+        ];
+        
+        // تبدیل تاریخ میلادی به شمسی
+        function gregorianToJalali(gy, gm, gd) {
+            let g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            let gy2 = (gm > 2) ? (gy + 1) : gy;
+            let days = (365 * gy) + (parseInt((gy2 + 3) / 4)) - (parseInt((gy2 + 99) / 100)) 
+                      + (parseInt((gy2 + 399) / 400)) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * (parseInt(days / 12053));
+            days %= 12053;
+            jy += 4 * (parseInt(days / 1461));
+            days %= 1461;
+            jy += parseInt((days - 1) / 365);
+            if (days > 365) days = (days - 1) % 365;
+            let jm = (days < 186) ? 1 + parseInt(days / 31) : 7 + parseInt((days - 186) / 30);
+            let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+        
+        // دریافت تاریخ امروز به شمسی
+        function getTodayPersianDate() {
+            const today = new Date();
+            const [jy, jm, jd] = gregorianToJalali(
+                today.getFullYear(), 
+                today.getMonth() + 1, 
+                today.getDate()
+            );
+            return { year: jy, month: jm, day: jd, dateStr: `${jy}/${jm}/${jd}` };
+        }
+        
+        // فرمت‌بندی عدد با کاما
+        function formatNumber(num) {
+            return new Intl.NumberFormat('fa-IR').format(num);
+        }
+        
+        // نمایش نوتیفیکیشن
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#40c057' : '#fa5252';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // محاسبه تاریخ‌های اقساط
+        function calculateInstallmentDates(day, totalMonths) {
+            const dates = [];
+            const today = getTodayPersianDate();
+            
+            for (let i = 0; i < totalMonths; i++) {
+                let year = today.year;
+                let month = today.month + i;
+                
+                // محاسبه سال و ماه
+                while (month > 12) {
+                    month -= 12;
+                    year += 1;
+                }
+                
+                dates.push({
+                    year: year,
+                    month: month,
+                    day: day,
+                    dateStr: `${year}/${month}/${day}`,
+                    displayDate: `${day} ${persianMonths[month-1]} ${year}`,
+                    isUpcoming: isDateUpcoming(year, month, day),
+                    isPaid: false
+                });
+            }
+            
+            return dates;
+        }
+        
+        // بررسی اینکه تاریخ آینده است یا گذشته
+        function isDateUpcoming(year, month, day) {
+            const today = getTodayPersianDate();
+            
+            if (year > today.year) return true;
+            if (year === today.year && month > today.month) return true;
+            if (year === today.year && month === today.month && day >= today.day) return true;
+            
+            return false;
+        }
+        
+        // افزودن قسط جدید
+        function addInstallment() {
+            const nameInput = document.getElementById('installmentName');
+            const amountInput = document.getElementById('installmentAmount');
+            const dayInput = document.getElementById('installmentDay');
+            const monthsInput = document.getElementById('installmentMonths');
+            
+            const name = nameInput.value.trim();
+            const amount = parseInt(amountInput.value);
+            const day = parseInt(dayInput.value);
+            const months = parseInt(monthsInput.value);
+            
+            // اعتبارسنجی
+            if (!name || !amount || !day || !months) {
+                showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+                return;
+            }
+            
+            if (day < 1 || day > 31) {
+                showNotification('روز ماه باید بین ۱ تا ۳۱ باشد', 'error');
+                return;
+            }
+            
+            if (months < 1 || months > 120) {
+                showNotification('تعداد ماه‌ها باید بین ۱ تا ۱۲۰ باشد', 'error');
+                return;
+            }
+            
+            const installmentDates = calculateInstallmentDates(day, months);
+            
+            installments.push({
+                id: Date.now(),
+                name: name,
+                amount: amount,
+                day: day,
+                totalMonths: months,
+                dates: installmentDates,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveInstallments();
+            renderInstallments();
+            updateStats();
+            
+            // پاک کردن فیلدها
+            nameInput.value = '';
+            amountInput.value = '';
+            dayInput.value = '';
+            monthsInput.value = '';
+            
+            showNotification('قسط جدید با موفقیت اضافه شد');
+        }
+        
+        // حذف قسط
+        function deleteInstallment(id) {
+            if (confirm('آیا از حذف این قسط مطمئن هستید؟')) {
+                installments = installments.filter(installment => installment.id !== id);
+                saveInstallments();
+                renderInstallments();
+                updateStats();
+                showNotification('قسط با موفقیت حذف شد');
+            }
+        }
+        
+        // علامت‌گذاری قسط به عنوان پرداخت شده
+        function markAsPaid(installmentId, dateIndex) {
+            const installment = installments.find(i => i.id === installmentId);
+            if (installment) {
+                installment.dates[dateIndex].isPaid = true;
+                saveInstallments();
+                renderInstallments();
+                updateStats();
+                showNotification('قسط به عنوان پرداخت شده علامت‌گذاری شد');
+            }
+        }
+        
+        // نمایش اقساط
+        function renderInstallments() {
+            const installmentsList = document.getElementById('installmentsList');
+            
+            if (installments.length === 0) {
+                installmentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i>💳</i>
+                        <h3>هیچ قسطی ثبت نشده است</h3>
+                        <p>قسط اول خود را اضافه کنید تا شروع کنیم</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            installmentsList.innerHTML = '';
+            
+            installments.forEach(installment => {
+                const installmentElement = document.createElement('div');
+                installmentElement.className = 'installment-item';
+                
+                let datesHTML = '';
+                installment.dates.forEach((date, index) => {
+                    const statusClass = date.isPaid ? 'paid' : (date.isUpcoming ? 'upcoming' : '');
+                    datesHTML += `
+                        <div class="detail-item ${statusClass}">
+                            <div class="detail-label">قسط ${index + 1}</div>
+                            <div class="detail-value">${date.displayDate}</div>
+                            ${!date.isPaid ? `<button onclick="markAsPaid(${installment.id}, ${index})" class="delete-btn" style="background: #40c057; margin-top: 5px; padding: 5px 10px; font-size: 11px;">پرداخت شد</button>` : '<div style="color: #40c057; margin-top: 5px;">✅ پرداخت شده</div>'}
+                        </div>
+                    `;
+                });
+                
+                installmentElement.innerHTML = `
+                    <div class="installment-header">
+                        <div class="installment-title">${installment.name}</div>
+                        <div class="installment-actions">
+                            <div style="color: #495057; font-weight: bold; margin-left: 15px;">${formatNumber(installment.amount)} تومان</div>
+                            <button class="delete-btn" onclick="deleteInstallment(${installment.id})">حذف</button>
+                        </div>
+                    </div>
+                    <div class="installment-details">
+                        ${datesHTML}
+                    </div>
+                `;
+                
+                installmentsList.appendChild(installmentElement);
+            });
+        }
+        
+        // به‌روزرسانی آمار
+        function updateStats() {
+            const totalInstallments = installments.length;
+            const totalAmount = installments.reduce((sum, installment) => sum + installment.amount, 0);
+            
+            let upcomingCount = 0;
+            installments.forEach(installment => {
+                upcomingCount += installment.dates.filter(date => date.isUpcoming && !date.isPaid).length;
+            });
+            
+            document.getElementById('totalInstallments').textContent = totalInstallments;
+            document.getElementById('upcomingCount').textContent = upcomingCount;
+            document.getElementById('totalAmount').textContent = formatNumber(totalAmount);
+        }
+        
+        // ذخیره اقساط
+        function saveInstallments() {
+            localStorage.setItem('installments', JSON.stringify(installments));
+        }
+        
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            renderInstallments();
+            updateStats();
+            
+            // امکان اضافه کردن با دکمه Enter
+            document.getElementById('installmentName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addInstallment();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
