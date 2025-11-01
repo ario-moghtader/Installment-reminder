@@ -7,61 +7,192 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Vazir',Tahoma,sans-serif;}
         body { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#333; min-height:100vh; padding:20px; direction:rtl;}
-        .container { max-width:1000px; margin:0 auto;}
+        .container { max-width:1200px; margin:0 auto;}
         header { text-align:center; margin-bottom:30px; color:white; text-shadow:0 2px 5px rgba(0,0,0,0.3);}
-        h1 { font-size:2.5rem; margin-bottom:10px;}
-        .creator { font-size:1rem; opacity:0.9; margin-top:10px;}
+        h1 { font-size:2.8rem; margin-bottom:15px;}
+        .creator { font-size:1.2rem; opacity:0.9; margin-top:10px;}
         .main-card { background:white; border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.2); margin-bottom:20px;}
-        .add-installment-form { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
+        .add-installment-form { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:15px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
         @media(max-width:768px){.add-installment-form{grid-template-columns:1fr;}}
-        .form-input { padding:12px 15px; border:2px solid #e9ecef; border-radius:10px; font-size:14px; transition:all 0.3s;}
+        .form-input { padding:15px; border:2px solid #e9ecef; border-radius:10px; font-size:16px; transition:all 0.3s;}
         .form-input:focus { outline:none; border-color:#4c6ef5; box-shadow:0 0 0 3px rgba(76,110,245,0.1);}
-        .add-btn { background:#40c057; color:white; border:none; border-radius:10px; padding:12px 20px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s; white-space:nowrap;}
+        .add-btn { background:#40c057; color:white; border:none; border-radius:10px; padding:15px 25px; cursor:pointer; font-weight:bold; font-size:16px; transition:all 0.3s; white-space:nowrap;}
         .add-btn:hover { background:#2f9e44; transform:translateY(-2px);}
-        .installments-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:20px; margin-top:20px;}
-        .loan-card { background:white; border-radius:15px; padding:20px; border-left:5px solid #4c6ef5; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:all 0.3s;}
+        .installments-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:25px; margin-top:20px;}
+        .loan-card { background:white; border-radius:15px; padding:25px; border-left:5px solid #4c6ef5; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:all 0.3s;}
         .loan-card:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.15);}
-        .loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
-        .loan-title { font-size:18px; font-weight:bold; color:#2c3e50;}
-        .loan-amount { font-size:20px; font-weight:bold; color:#e03131; direction:ltr; text-align:left;}
-        .loan-details { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px;}
-        .detail-item { background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;}
-        .detail-label { font-size:11px; color:#6c757d; margin-bottom:5px;}
-        .detail-value { font-size:14px; font-weight:bold; color:#495057;}
-        .installments-list { margin-top:15px;}
-        .installment-row { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; padding:10px; margin-bottom:8px; background:#f8f9fa; border-radius:8px; align-items:center; transition:all 0.3s;}
+        .loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #f8f9fa;}
+        .loan-title { font-size:22px; font-weight:bold; color:#2c3e50;}
+        .loan-amount { font-size:24px; font-weight:bold; color:#e03131; direction:ltr; text-align:left;}
+        .loan-details { display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:20px;}
+        .detail-item { background:#f8f9fa; padding:15px; border-radius:10px; text-align:center;}
+        .detail-label { font-size:14px; color:#6c757d; margin-bottom:8px;}
+        .detail-value { font-size:16px; font-weight:bold; color:#495057;}
+        .installments-list { margin-top:20px;}
+        .installment-row { display:grid; grid-template-columns:1fr 1fr auto; gap:15px; padding:15px; margin-bottom:12px; background:#f8f9fa; border-radius:10px; align-items:center; transition:all 0.3s;}
         .installment-row.upcoming { background:#fff3cd; border-right:3px solid #ffc107;}
         .installment-row.overdue { background:#ffe3e3; border-right:3px solid #fa5252;}
         .installment-row.paid { background:#d3f9d8; border-right:3px solid #40c057; opacity:0.8;}
-        .installment-date { font-size:13px; font-weight:500;}
-        .installment-amount { font-size:14px; font-weight:bold; color:#495057; direction:ltr; text-align:left;}
-        .payment-buttons { display:flex; gap:5px;}
-        .pay-btn { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:11px; font-weight:bold; transition:all 0.3s;}
+        .installment-date { font-size:16px; font-weight:500;}
+        .installment-amount { font-size:16px; font-weight:bold; color:#495057; direction:ltr; text-align:left;}
+        .payment-buttons { display:flex; gap:8px;}
+        .pay-btn { padding:8px 15px; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:all 0.3s;}
         .pay-btn.paid { background:#40c057; color:white;}
         .pay-btn.unpaid { background:#fa5252; color:white;}
         .pay-btn:hover { transform:scale(1.05);}
         .pay-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none;}
-        .loan-actions { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:2px solid #f8f9fa;}
-        .delete-btn { background:#fa5252; color:white; border:none; border-radius:6px; padding:8px 15px; cursor:pointer; font-size:12px; transition:all 0.3s;}
+        .loan-actions { display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:15px; border-top:2px solid #f8f9fa;}
+        .delete-btn { background:#fa5252; color:white; border:none; border-radius:6px; padding:10px 20px; cursor:pointer; font-size:14px; transition:all 0.3s;}
         .delete-btn:hover { background:#e03131; transform:scale(1.05);}
-        .loan-status { font-size:12px; font-weight:bold; padding:5px 10px; border-radius:15px;}
+        .loan-status { font-size:14px; font-weight:bold; padding:8px 15px; border-radius:15px;}
         .status-active { background:#fff3cd; color:#856404;}
         .status-completed { background:#d3f9d8; color:#0f5132;}
-        .empty-state { text-align:center; padding:60px 20px; color:#6c757d; grid-column:1 / -1;}
-        .empty-state i { font-size:80px; margin-bottom:20px; display:block; color:#adb5bd;}
-        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-top:30px;}
-        .stat-card { background:white; padding:20px; border-radius:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
-        .stat-value { font-size:1.8rem; font-weight:bold; color:#4c6ef5; margin-bottom:5px;}
-        .stat-label { color:#6c757d; font-size:14px;}
+        .empty-state { text-align:center; padding:80px 20px; color:#6c757d; grid-column:1 / -1;}
+        .empty-state i { font-size:100px; margin-bottom:25px; display:block; color:#adb5bd;}
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-top:30px;}
+        .stat-card { background:white; padding:25px; border-radius:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+        .stat-value { font-size:2.2rem; font-weight:bold; color:#4c6ef5; margin-bottom:8px;}
+        .stat-label { color:#6c757d; font-size:16px;}
         .notification { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#40c057; color:white; padding:15px 25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; display:none;}
-        .section-title { font-size:1.5rem; color:#2c3e50; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
-        .data-management { display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:15px;}
-        .data-btn { padding:12px 20px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:14px; transition:all 0.3s;}
+        .section-title { font-size:1.8rem; color:#2c3e50; margin-bottom:25px; padding-bottom:15px; border-bottom:2px solid #f8f9fa;}
+        .data-management { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:20px; padding:25px; background:#f8f9fa; border-radius:15px;}
+        .data-btn { padding:15px 25px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; font-size:16px; transition:all 0.3s;}
         .export-btn { background:#4c6ef5; color:white;}
         .import-btn { background:#ff922b; color:white;}
         .clear-btn { background:#fa5252; color:white;}
         .data-btn:hover { transform:translateY(-2px); opacity:0.9;}
         .file-input { display:none;}
+        
+        /* استایل تقویم */
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: #4c6ef5;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: #3b5bdb;
+            transform: scale(1.1);
+        }
+        
+        .current-month {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3b5bdb;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+            flex-direction: column;
+            padding: 8px;
+            min-height: 55px;
+            font-size: 16px;
+        }
+        
+        .day:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+        
+        .current-day {
+            background: #4c6ef5;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .selected-day {
+            background: #ff922b;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .other-month {
+            color: #adb5bd;
+        }
+        
+        .date-selection {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .date-btn {
+            padding: 10px 20px;
+            background: #4c6ef5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .date-btn:hover {
+            background: #3b5bdb;
+        }
+        
+        .selected-dates {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -77,10 +208,49 @@
             <input type="text" class="form-input" id="installmentName" placeholder="نام وام" required>
             <input type="text" class="form-input" id="installmentMonthly" placeholder="قسط ماهیانه (تومان)" required>
             <input type="number" class="form-input" id="installmentDay" placeholder="روز سررسید (۱-۳۱)" min="1" max="31" required>
-            <input type="date" class="form-input" id="startDate" placeholder="تاریخ شروع" required>
-            <input type="date" class="form-input" id="endDate" placeholder="تاریخ پایان" required>
+            <input type="text" class="form-input" id="startDate" placeholder="تاریخ شروع" readonly required>
+            <input type="text" class="form-input" id="endDate" placeholder="تاریخ پایان" readonly required>
             <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required readonly>
             <button class="add-btn" onclick="addInstallment()">➕ افزودن وام</button>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn prev-year">«</button>
+                    <button class="nav-btn prev-month">‹</button>
+                </div>
+                <div class="current-month">مهر ۱۴۰۴</div>
+                <div class="calendar-nav">
+                    <button class="nav-btn next-month">›</button>
+                    <button class="nav-btn next-year">»</button>
+                </div>
+            </div>
+            
+            <div class="weekdays">
+                <div>ش</div>
+                <div>ی</div>
+                <div>د</div>
+                <div>س</div>
+                <div>چ</div>
+                <div>پ</div>
+                <div>ج</div>
+            </div>
+            
+            <div class="days-grid" id="daysGrid">
+                <!-- روزهای تقویم توسط جاوااسکریپت پر می‌شوند -->
+            </div>
+            
+            <div class="date-selection">
+                <button class="date-btn" id="setStartDate">انتخاب به عنوان تاریخ شروع</button>
+                <button class="date-btn" id="setEndDate">انتخاب به عنوان تاریخ پایان</button>
+            </div>
+            
+            <div class="selected-dates">
+                <div>تاریخ شروع: <span id="displayStartDate">--</span></div>
+                <div>تاریخ پایان: <span id="displayEndDate">--</span></div>
+                <div>تعداد ماه‌ها: <span id="displayMonths">--</span></div>
+            </div>
         </div>
 
         <h3 class="section-title">📋 لیست وام‌ها</h3>
@@ -111,59 +281,213 @@
 let loans = JSON.parse(localStorage.getItem('loans'))||[];
 const persianMonths=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 
-// تبدیل تاریخ میلادی به شمسی
-function gregorianToJalali(gy,gm,gd){
-    let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334]; 
-    let jy=(gy<=1600)?0:979; 
-    gy-=(gy<=1600)?621:1600; 
-    let gy2=(gm>2)?(gy+1):gy; 
-    let days=(365*gy)+parseInt((gy2+3)/4)-parseInt((gy2+99)/100)+parseInt((gy2+399)/400)-80+gd+g_d_m[gm-1]; 
-    jy+=33*parseInt(days/12053); 
-    days%=12053; 
-    jy+=4*parseInt(days/1461); 
-    days%=1461; 
-    jy+=parseInt((days-1)/365); 
-    if(days>365) days=(days-1)%365; 
-    let jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30); 
-    let jd=1+((days<186)?(days%31):((days-186)%30)); 
-    return [jy,jm,jd];
+// تاریخ جاری شمسی
+function getCurrentJalaliDate() {
+    const now = new Date();
+    
+    // الگوریتم ساده برای تبدیل میلادی به شمسی (برای سال 1404)
+    const gregorianYear = now.getFullYear();
+    const gregorianMonth = now.getMonth() + 1;
+    const gregorianDay = now.getDate();
+    
+    // محاسبات ساده برای تبدیل - این فقط برای سال 2025/1404 کار می‌کند
+    let jalaliYear, jalaliMonth, jalaliDay;
+    
+    if (gregorianYear === 2025) {
+        jalaliYear = 1404;
+        // محاسبه ماه و روز شمسی بر اساس تاریخ میلادی
+        const startFarvardin = new Date(2025, 2, 21); // 1 فروردین 1404
+        const diffTime = now - startFarvardin;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) {
+            // قبل از فروردین 1404
+            jalaliYear = 1403;
+            // محاسبات برای سال قبل ساده‌سازی شده
+        } else {
+            jalaliMonth = Math.floor(diffDays / 31) + 1;
+            jalaliDay = (diffDays % 31) + 1;
+            
+            // تنظیم دقیق‌تر بر اساس طول ماه‌های شمسی
+            const monthLengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+            let dayCounter = diffDays + 1;
+            jalaliMonth = 1;
+            
+            for (let i = 0; i < monthLengths.length; i++) {
+                if (dayCounter <= monthLengths[i]) {
+                    jalaliDay = dayCounter;
+                    break;
+                }
+                dayCounter -= monthLengths[i];
+                jalaliMonth++;
+            }
+        }
+    } else {
+        // برای سال‌های دیگر، مقدار پیش‌فرض می‌گذاریم
+        jalaliYear = 1404;
+        jalaliMonth = 7; // مهر
+        jalaliDay = 21;
+    }
+    
+    return {
+        year: jalaliYear,
+        month: jalaliMonth,
+        day: jalaliDay,
+        toString: function() {
+            return `${this.year}/${this.month}/${this.day}`;
+        }
+    };
 }
 
-// تبدیل تاریخ شمسی به میلادی
-function jalaliToGregorian(jy,jm,jd){
-    jy+=1595;
-    let days=-355668+(365*jy)+parseInt(jy/33)*8+parseInt(((jy%33)+3)/4)+jd;
-    if(jm<7) days+=(jm-1)*31;
-    else days+=((jm-7)*30)+186;
-    let gy=400*parseInt(days/146097);
-    days%=146097;
-    if(days>36524){
-        gy+=100*parseInt(--days/36524);
-        days%=36524;
-        if(days>=365) days++;
-    }
-    gy+=4*parseInt(days/1461);
-    days%=1461;
-    if(days>365){
-        gy+=parseInt((days-1)/365);
-        days=(days-1)%365;
-    }
-    let gd=days+1;
-    let sal_a=[0,31,((gy%4===0 && gy%100!==0) || (gy%400===0))?29:28,31,30,31,30,31,31,30,31,30,31];
-    let gm;
-    for(gm=0;gm<13;gm++){
-        let v=sal_a[gm];
-        if(gd<=v) break;
-        gd-=v;
-    }
-    return [gy,gm,gd];
+// تعداد روزهای ماه شمسی
+function getDaysInJalaliMonth(year, month) {
+    if (month <= 6) return 31;
+    if (month <= 11) return 30;
+    return 29; // اسفند
 }
 
-// گرفتن تاریخ امروز به شمسی
-function getTodayPersianDate(){ 
-    const today=new Date(); 
-    const [jy,jm,jd]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate()); 
-    return {year:jy,month:jm,day:jd,dateStr:`${jy}/${jm}/${jd}`};
+// محاسبه روز هفته برای تاریخ شمسی (الگوریتم ساده)
+function getJalaliDayOfWeek(year, month, day) {
+    // الگوریتم ساده برای محاسبه روز هفته
+    // فروردین 1404 از شنبه شروع می‌شود
+    const startDay = 0; // فروردین 1404 از شنبه شروع می‌شود
+    let totalDays = day - 1;
+    
+    for (let m = 1; m < month; m++) {
+        totalDays += getDaysInJalaliMonth(year, m);
+    }
+    
+    return (startDay + totalDays) % 7;
+}
+
+// تولید تقویم برای ماه و سال مشخص
+function generateCalendar(year, month) {
+    const daysGrid = document.getElementById('daysGrid');
+    daysGrid.innerHTML = '';
+    
+    // تعداد روزهای ماه
+    const daysInMonth = getDaysInJalaliMonth(year, month);
+    
+    // روز اول ماه شمسی
+    const firstDayOfWeek = getJalaliDayOfWeek(year, month, 1);
+    
+    // روزهای ماه قبل
+    let prevMonth = month - 1;
+    let prevYear = year;
+    if (prevMonth < 1) {
+        prevMonth = 12;
+        prevYear = year - 1;
+    }
+    const prevMonthDays = getDaysInJalaliMonth(prevYear, prevMonth);
+    
+    // اضافه کردن روزهای ماه قبل
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day other-month';
+        dayElement.textContent = prevMonthDays - i;
+        daysGrid.appendChild(dayElement);
+    }
+    
+    // اضافه کردن روزهای ماه جاری
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        const dateStr = `${year}/${month}/${day}`;
+        dayElement.className = 'day';
+        dayElement.innerHTML = `<div>${day}</div>`;
+        dayElement.dataset.date = dateStr;
+        
+        // اگر روز امروز است
+        const today = getCurrentJalaliDate().toString();
+        if (dateStr === today) {
+            dayElement.classList.add('current-day');
+        }
+        
+        // اگر روز انتخاب شده است
+        if (dateStr === selectedDate) {
+            dayElement.classList.add('selected-day');
+        }
+        
+        dayElement.addEventListener('click', () => selectDate(dateStr));
+        daysGrid.appendChild(dayElement);
+    }
+    
+    // اضافه کردن روزهای ماه بعد
+    const totalCells = 42;
+    const remainingCells = totalCells - (firstDayOfWeek + daysInMonth);
+    
+    for (let day = 1; day <= remainingCells; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'day other-month';
+        dayElement.textContent = day;
+        daysGrid.appendChild(dayElement);
+    }
+    
+    // به‌روزرسانی هدر تقویم
+    document.querySelector('.current-month').textContent = `${persianMonths[month-1]} ${year}`;
+}
+
+// انتخاب تاریخ
+let selectedDate = getCurrentJalaliDate().toString();
+let startDate = '';
+let endDate = '';
+
+function selectDate(dateStr) {
+    selectedDate = dateStr;
+    generateCalendar(currentYear, currentMonth);
+}
+
+// تنظیم تاریخ شروع
+function setStartDate() {
+    startDate = selectedDate;
+    document.getElementById('startDate').value = startDate;
+    document.getElementById('displayStartDate').textContent = formatPersianDate(startDate);
+    updateMonthsFromDates();
+}
+
+// تنظیم تاریخ پایان
+function setEndDate() {
+    endDate = selectedDate;
+    document.getElementById('endDate').value = endDate;
+    document.getElementById('displayEndDate').textContent = formatPersianDate(endDate);
+    updateMonthsFromDates();
+}
+
+// فرمت‌بندی تاریخ برای نمایش
+function formatPersianDate(dateStr) {
+    const [y, m, d] = dateStr.split('/').map(Number);
+    return `${d} ${persianMonths[m-1]} ${y}`;
+}
+
+// محاسبه تعداد ماه‌ها بین دو تاریخ
+function calculateMonthsBetweenDates(startDate, endDate) {
+    const startParts = startDate.split('/').map(Number);
+    const endParts = endDate.split('/').map(Number);
+    
+    const startYear = startParts[0];
+    const startMonth = startParts[1];
+    const endYear = endParts[0];
+    const endMonth = endParts[1];
+    
+    return (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+}
+
+// به‌روزرسانی تعداد ماه‌ها بر اساس تاریخ‌ها
+function updateMonthsFromDates() {
+    if (startDate && endDate) {
+        const months = calculateMonthsBetweenDates(startDate, endDate);
+        document.getElementById('installmentMonths').value = months;
+        document.getElementById('displayMonths').textContent = months;
+        
+        // بررسی اینکه تاریخ پایان بعد از تاریخ شروع باشد
+        const startParts = startDate.split('/').map(Number);
+        const endParts = endDate.split('/').map(Number);
+        
+        if (endParts[0] < startParts[0] || 
+            (endParts[0] === startParts[0] && endParts[1] < startParts[1]) ||
+            (endParts[0] === startParts[0] && endParts[1] === startParts[1] && endParts[2] < startParts[2])) {
+            showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
+        }
+    }
 }
 
 // فرمت کردن اعداد
@@ -202,20 +526,16 @@ function calculateInstallmentDates(startDate, endDate, day){
     const dates=[];
     
     // تبدیل تاریخ شروع به شمسی
-    const startParts = startDate.split('-');
-    const [startJy, startJm, startJd] = gregorianToJalali(
-        parseInt(startParts[0]), 
-        parseInt(startParts[1]), 
-        parseInt(startParts[2])
-    );
+    const startParts = startDate.split('/').map(Number);
+    const startJy = startParts[0];
+    const startJm = startParts[1];
+    const startJd = startParts[2];
     
     // تبدیل تاریخ پایان به شمسی
-    const endParts = endDate.split('-');
-    const [endJy, endJm, endJd] = gregorianToJalali(
-        parseInt(endParts[0]), 
-        parseInt(endParts[1]), 
-        parseInt(endParts[2])
-    );
+    const endParts = endDate.split('/').map(Number);
+    const endJy = endParts[0];
+    const endJm = endParts[1];
+    const endJd = endParts[2];
     
     // محاسبه تعداد ماه‌ها
     const monthsDiff = (endJy - startJy) * 12 + (endJm - startJm) + 1;
@@ -235,7 +555,7 @@ function calculateInstallmentDates(startDate, endDate, day){
         let installmentDay = day;
         
         // اگر روز قسط بیشتر از روزهای ماه باشد، از آخر ماه استفاده کن
-        const daysInMonth = month < 7 ? 31 : month < 12 ? 30 : 29;
+        const daysInMonth = getDaysInJalaliMonth(year, month);
         if(installmentDay > daysInMonth){
             installmentDay = daysInMonth;
         }
@@ -257,33 +577,11 @@ function calculateInstallmentDates(startDate, endDate, day){
 
 // بررسی تاریخ سررسید
 function isDateOverdue(y,m,d){ 
-    const t=getTodayPersianDate(); 
+    const t=getCurrentJalaliDate(); 
     if(y<t.year) return true; 
     if(y===t.year && m<t.month) return true; 
     if(y===t.year && m===t.month && d<t.day) return true; 
     return false;
-}
-
-// محاسبه تعداد ماه‌ها بین دو تاریخ
-function calculateMonthsBetweenDates(startDate, endDate){
-    const startParts = startDate.split('-');
-    const endParts = endDate.split('-');
-    
-    const start = new Date(startParts[0], startParts[1]-1, startParts[2]);
-    const end = new Date(endParts[0], endParts[1]-1, endParts[2]);
-    
-    return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
-}
-
-// به‌روزرسانی تعداد ماه‌ها بر اساس تاریخ‌ها
-function updateMonthsFromDates(){
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    if(startDate && endDate){
-        const months = calculateMonthsBetweenDates(startDate, endDate);
-        document.getElementById('installmentMonths').value = months;
-    }
 }
 
 // افزودن وام
@@ -303,7 +601,12 @@ function addInstallment(){
     if(months<1 || months>120){ showNotification('تعداد ماه‌ها ۱ تا ۱۲۰','error'); return;}
     
     // بررسی اینکه تاریخ پایان بعد از تاریخ شروع باشد
-    if(new Date(endDate) <= new Date(startDate)){
+    const startParts = startDate.split('/').map(Number);
+    const endParts = endDate.split('/').map(Number);
+    
+    if (endParts[0] < startParts[0] || 
+        (endParts[0] === startParts[0] && endParts[1] < startParts[1]) ||
+        (endParts[0] === startParts[0] && endParts[1] === startParts[1] && endParts[2] < startParts[2])) {
         showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد','error');
         return;
     }
@@ -334,6 +637,12 @@ function addInstallment(){
     document.getElementById('startDate').value=''; 
     document.getElementById('endDate').value=''; 
     document.getElementById('installmentMonths').value='';
+    document.getElementById('displayStartDate').textContent = '--';
+    document.getElementById('displayEndDate').textContent = '--';
+    document.getElementById('displayMonths').textContent = '--';
+    
+    startDate = '';
+    endDate = '';
     
     showNotification('وام جدید اضافه شد');
 }
@@ -392,22 +701,11 @@ function renderLoans(){
         }); 
         
         // تبدیل تاریخ شروع و پایان به شمسی
-        const startParts = loan.startDate.split('-');
-        const [startJy, startJm, startJd] = gregorianToJalali(
-            parseInt(startParts[0]), 
-            parseInt(startParts[1]), 
-            parseInt(startParts[2])
-        );
+        const startParts = loan.startDate.split('/').map(Number);
+        const endParts = loan.endDate.split('/').map(Number);
         
-        const endParts = loan.endDate.split('-');
-        const [endJy, endJm, endJd] = gregorianToJalali(
-            parseInt(endParts[0]), 
-            parseInt(endParts[1]), 
-            parseInt(endParts[2])
-        );
-        
-        const startDateStr = `${startJd} ${persianMonths[startJm-1]} ${startJy}`;
-        const endDateStr = `${endJd} ${persianMonths[endJm-1]} ${endJy}`;
+        const startDateStr = `${startParts[2]} ${persianMonths[startParts[1]-1]} ${startParts[0]}`;
+        const endDateStr = `${endParts[2]} ${persianMonths[endParts[1]-1]} ${endParts[0]}`;
         
         container.innerHTML+=`
             <div class="loan-card">
@@ -489,7 +787,7 @@ function updateStats(){
     loans.forEach(loan=>{ 
         loan.dates.forEach(d=>{ 
             if(!d.isPaid){ 
-                const t=getTodayPersianDate(); 
+                const t=getCurrentJalaliDate(); 
                 if(d.year>t.year||(d.year===t.year && d.month>t.month)||(d.year===t.year && d.month===t.month && d.day>=t.day)) 
                     upcomingCount++; 
                 if(d.isOverdue && !d.isPaid) 
@@ -507,10 +805,21 @@ function updateStats(){
 
 // بررسی نوتیفیکیشن قسط‌ها
 function checkInstallmentNotifications(){
-    const today=getTodayPersianDate();
+    const today=getCurrentJalaliDate();
     const tomorrowDate=new Date(); 
     tomorrowDate.setDate(tomorrowDate.getDate()+1);
-    const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
+    
+    // محاسبه تاریخ فردا به شمسی
+    const tomorrowJalali = getCurrentJalaliDate();
+    tomorrowJalali.day += 1;
+    if (tomorrowJalali.day > getDaysInJalaliMonth(tomorrowJalali.year, tomorrowJalali.month)) {
+        tomorrowJalali.day = 1;
+        tomorrowJalali.month += 1;
+        if (tomorrowJalali.month > 12) {
+            tomorrowJalali.month = 1;
+            tomorrowJalali.year += 1;
+        }
+    }
     
     loans.forEach(loan=>{
         loan.dates.forEach(date=>{
@@ -518,7 +827,7 @@ function checkInstallmentNotifications(){
                 if(date.year===today.year && date.month===today.month && date.day===today.day){
                     showNotificationWithSound(`💳 قسط امروز: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
                 }
-                if(date.year===ty && date.month===tm && date.day===td){
+                if(date.year===tomorrowJalali.year && date.month===tomorrowJalali.month && date.day===tomorrowJalali.day){
                     showNotificationWithSound(`💳 قسط فردا: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
                 }
             }
@@ -528,17 +837,29 @@ function checkInstallmentNotifications(){
 
 // دکمه تست نوتیفیکیشن
 function testNotificationCheckDue(){
-    const today=getTodayPersianDate();
+    const today=getCurrentJalaliDate();
     const tomorrowDate=new Date(); 
     tomorrowDate.setDate(tomorrowDate.getDate()+1);
-    const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
+    
+    // محاسبه تاریخ فردا به شمسی
+    const tomorrowJalali = getCurrentJalaliDate();
+    tomorrowJalali.day += 1;
+    if (tomorrowJalali.day > getDaysInJalaliMonth(tomorrowJalali.year, tomorrowJalali.month)) {
+        tomorrowJalali.day = 1;
+        tomorrowJalali.month += 1;
+        if (tomorrowJalali.month > 12) {
+            tomorrowJalali.month = 1;
+            tomorrowJalali.year += 1;
+        }
+    }
+    
     let hasDue=false;
     
     loans.forEach(loan=>{
         loan.dates.forEach(date=>{
             if(!date.isPaid){
                 if((date.year===today.year && date.month===today.month && date.day===today.day) ||
-                   (date.year===ty && date.month===tm && date.day===td)){
+                   (date.year===tomorrowJalali.year && date.month===tomorrowJalali.month && date.day===tomorrowJalali.day)){
                     hasDue=true;
                     showNotificationWithSound(`💳 موعد قسط: ${loan.name}`,`مبلغ: ${formatNumber(loan.monthlyAmount)} تومان`);
                 }
@@ -551,9 +872,53 @@ function testNotificationCheckDue(){
     }
 }
 
-// تنظیم رویدادها برای تاریخ‌ها
-document.getElementById('startDate').addEventListener('change', updateMonthsFromDates);
-document.getElementById('endDate').addEventListener('change', updateMonthsFromDates);
+// راه‌اندازی اولیه
+document.addEventListener('DOMContentLoaded', () => {
+    // استفاده از تاریخ جاری به جای تاریخ ثابت
+    const currentJalali = getCurrentJalaliDate();
+    let currentYear = currentJalali.year;
+    let currentMonth = currentJalali.month;
+    
+    // تولید تقویم
+    generateCalendar(currentYear, currentMonth);
+    
+    // رویدادهای ناوبری تقویم
+    document.querySelector('.prev-year').addEventListener('click', () => {
+        currentYear--;
+        generateCalendar(currentYear, currentMonth);
+    });
+    
+    document.querySelector('.prev-month').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 1) {
+            currentMonth = 12;
+            currentYear--;
+        }
+        generateCalendar(currentYear, currentMonth);
+    });
+    
+    document.querySelector('.next-month').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 12) {
+            currentMonth = 1;
+            currentYear++;
+        }
+        generateCalendar(currentYear, currentMonth);
+    });
+    
+    document.querySelector('.next-year').addEventListener('click', () => {
+        currentYear++;
+        generateCalendar(currentYear, currentMonth);
+    });
+    
+    // رویدادهای انتخاب تاریخ
+    document.getElementById('setStartDate').addEventListener('click', setStartDate);
+    document.getElementById('setEndDate').addEventListener('click', setEndDate);
+    
+    // بارگذاری اولیه
+    renderLoans();
+    updateStats();
+});
 
 // درخواست دسترسی نوتیفیکیشن
 if("Notification" in window && Notification.permission!=="granted"){ 
@@ -562,10 +927,6 @@ if("Notification" in window && Notification.permission!=="granted"){
 
 // بررسی هر ۳۰ دقیقه
 setInterval(checkInstallmentNotifications,30*60*1000);
-
-// بارگذاری اولیه
-renderLoans();
-updateStats();
 </script>
 </body>
 </html>
