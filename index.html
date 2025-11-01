@@ -12,7 +12,7 @@
         h1 { font-size:2.5rem; margin-bottom:10px;}
         .creator { font-size:1rem; opacity:0.9; margin-top:10px;}
         .main-card { background:white; border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.2); margin-bottom:20px;}
-        .add-installment-form { display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; gap:12px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
+        .add-installment-form { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto; gap:12px; margin-bottom:30px; padding:25px; background:#f8f9fa; border-radius:15px;}
         @media(max-width:768px){.add-installment-form{grid-template-columns:1fr;}}
         .form-input { padding:12px 15px; border:2px solid #e9ecef; border-radius:10px; font-size:14px; transition:all 0.3s;}
         .form-input:focus { outline:none; border-color:#4c6ef5; box-shadow:0 0 0 3px rgba(76,110,245,0.1);}
@@ -24,7 +24,7 @@
         .loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #f8f9fa;}
         .loan-title { font-size:18px; font-weight:bold; color:#2c3e50;}
         .loan-amount { font-size:20px; font-weight:bold; color:#e03131; direction:ltr; text-align:left;}
-        .loan-details { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;}
+        .loan-details { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px;}
         .detail-item { background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;}
         .detail-label { font-size:11px; color:#6c757d; margin-bottom:5px;}
         .detail-value { font-size:14px; font-weight:bold; color:#495057;}
@@ -77,7 +77,9 @@
             <input type="text" class="form-input" id="installmentName" placeholder="نام وام" required>
             <input type="text" class="form-input" id="installmentMonthly" placeholder="قسط ماهیانه (تومان)" required>
             <input type="number" class="form-input" id="installmentDay" placeholder="روز سررسید (۱-۳۱)" min="1" max="31" required>
-            <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required>
+            <input type="date" class="form-input" id="startDate" placeholder="تاریخ شروع" required>
+            <input type="date" class="form-input" id="endDate" placeholder="تاریخ پایان" required>
+            <input type="number" class="form-input" id="installmentMonths" placeholder="ماه‌های مانده" min="1" max="120" required readonly>
             <button class="add-btn" onclick="addInstallment()">➕ افزودن وام</button>
         </div>
 
@@ -109,70 +111,407 @@
 let loans = JSON.parse(localStorage.getItem('loans'))||[];
 const persianMonths=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 
+// تبدیل تاریخ میلادی به شمسی
 function gregorianToJalali(gy,gm,gd){
-    let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334]; let jy=(gy<=1600)?0:979; gy-=(gy<=1600)?621:1600; let gy2=(gm>2)?(gy+1):gy; let days=(365*gy)+parseInt((gy2+3)/4)-parseInt((gy2+99)/100)+parseInt((gy2+399)/400)-80+gd+g_d_m[gm-1]; jy+=33*parseInt(days/12053); days%=12053; jy+=4*parseInt(days/1461); days%=1461; jy+=parseInt((days-1)/365); if(days>365) days=(days-1)%365; let jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30); let jd=1+((days<186)?(days%31):((days-186)%30)); return [jy,jm,jd];
+    let g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334]; 
+    let jy=(gy<=1600)?0:979; 
+    gy-=(gy<=1600)?621:1600; 
+    let gy2=(gm>2)?(gy+1):gy; 
+    let days=(365*gy)+parseInt((gy2+3)/4)-parseInt((gy2+99)/100)+parseInt((gy2+399)/400)-80+gd+g_d_m[gm-1]; 
+    jy+=33*parseInt(days/12053); 
+    days%=12053; 
+    jy+=4*parseInt(days/1461); 
+    days%=1461; 
+    jy+=parseInt((days-1)/365); 
+    if(days>365) days=(days-1)%365; 
+    let jm=(days<186)?1+parseInt(days/31):7+parseInt((days-186)/30); 
+    let jd=1+((days<186)?(days%31):((days-186)%30)); 
+    return [jy,jm,jd];
 }
-function getTodayPersianDate(){ const today=new Date(); const [jy,jm,jd]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate()); return {year:jy,month:jm,day:jd,dateStr:`${jy}/${jm}/${jd}`};}
-function formatNumber(num){ return new Intl.NumberFormat('fa-IR').format(num);}
-function parseAmount(str){ return parseInt(str.replace(/[^\d]/g,''))||0;}
-function showNotification(msg,type='success'){ const n=document.getElementById('notification'); n.textContent=msg; n.style.background=type==='success'?'#40c057':'#fa5252'; n.style.display='block'; setTimeout(()=>{ n.style.display='none'; },3000);}
-function showNotificationWithSound(title,body){ const sound=document.getElementById('notifSound'); if("Notification" in window && Notification.permission==="granted"){ for(let i=0;i<5;i++){ new Notification(title,{body:body,icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png"}); sound.play(); } } else { for(let i=0;i<5;i++){ showNotification(`${title}: ${body}`,'error'); sound.play(); } }}
 
-// تاریخ‌های قسط
-function calculateInstallmentDates(day,months){
-    const dates=[]; const today=getTodayPersianDate();
-    for(let i=0;i<months;i++){
-        let year=today.year; let month=today.month+i;
-        while(month>12){ month-=12; year+=1; }
-        const installmentDate={ year:year, month:month, day:day, dateStr:`${year}/${month}/${day}`, displayDate:`${day} ${persianMonths[month-1]} ${year}`, isPaid:false, isOverdue:isDateOverdue(year,month,day) };
+// تبدیل تاریخ شمسی به میلادی
+function jalaliToGregorian(jy,jm,jd){
+    jy+=1595;
+    let days=-355668+(365*jy)+parseInt(jy/33)*8+parseInt(((jy%33)+3)/4)+jd;
+    if(jm<7) days+=(jm-1)*31;
+    else days+=((jm-7)*30)+186;
+    let gy=400*parseInt(days/146097);
+    days%=146097;
+    if(days>36524){
+        gy+=100*parseInt(--days/36524);
+        days%=36524;
+        if(days>=365) days++;
+    }
+    gy+=4*parseInt(days/1461);
+    days%=1461;
+    if(days>365){
+        gy+=parseInt((days-1)/365);
+        days=(days-1)%365;
+    }
+    let gd=days+1;
+    let sal_a=[0,31,((gy%4===0 && gy%100!==0) || (gy%400===0))?29:28,31,30,31,30,31,31,30,31,30,31];
+    let gm;
+    for(gm=0;gm<13;gm++){
+        let v=sal_a[gm];
+        if(gd<=v) break;
+        gd-=v;
+    }
+    return [gy,gm,gd];
+}
+
+// گرفتن تاریخ امروز به شمسی
+function getTodayPersianDate(){ 
+    const today=new Date(); 
+    const [jy,jm,jd]=gregorianToJalali(today.getFullYear(),today.getMonth()+1,today.getDate()); 
+    return {year:jy,month:jm,day:jd,dateStr:`${jy}/${jm}/${jd}`};
+}
+
+// فرمت کردن اعداد
+function formatNumber(num){ return new Intl.NumberFormat('fa-IR').format(num);}
+
+// تبدیل مبلغ به عدد
+function parseAmount(str){ return parseInt(str.replace(/[^\d]/g,''))||0;}
+
+// نمایش نوتیفیکیشن
+function showNotification(msg,type='success'){ 
+    const n=document.getElementById('notification'); 
+    n.textContent=msg; 
+    n.style.background=type==='success'?'#40c057':'#fa5252'; 
+    n.style.display='block'; 
+    setTimeout(()=>{ n.style.display='none'; },3000);
+}
+
+// نمایش نوتیفیکیشن با صدا
+function showNotificationWithSound(title,body){ 
+    const sound=document.getElementById('notifSound'); 
+    if("Notification" in window && Notification.permission==="granted"){ 
+        for(let i=0;i<5;i++){ 
+            new Notification(title,{body:body,icon:"https://cdn-icons-png.flaticon.com/512/190/190411.png"}); 
+            sound.play(); 
+        } 
+    } else { 
+        for(let i=0;i<5;i++){ 
+            showNotification(`${title}: ${body}`,'error'); 
+            sound.play(); 
+        } 
+    }
+}
+
+// محاسبه تاریخ‌های قسط بر اساس تاریخ شروع و پایان
+function calculateInstallmentDates(startDate, endDate, day){
+    const dates=[];
+    
+    // تبدیل تاریخ شروع به شمسی
+    const startParts = startDate.split('-');
+    const [startJy, startJm, startJd] = gregorianToJalali(
+        parseInt(startParts[0]), 
+        parseInt(startParts[1]), 
+        parseInt(startParts[2])
+    );
+    
+    // تبدیل تاریخ پایان به شمسی
+    const endParts = endDate.split('-');
+    const [endJy, endJm, endJd] = gregorianToJalali(
+        parseInt(endParts[0]), 
+        parseInt(endParts[1]), 
+        parseInt(endParts[2])
+    );
+    
+    // محاسبه تعداد ماه‌ها
+    const monthsDiff = (endJy - startJy) * 12 + (endJm - startJm) + 1;
+    
+    // ایجاد تاریخ‌های قسط
+    for(let i=0; i<monthsDiff; i++){
+        let year = startJy;
+        let month = startJm + i;
+        
+        // تنظیم سال و ماه
+        while(month > 12){
+            month -= 12;
+            year += 1;
+        }
+        
+        // تنظیم روز قسط
+        let installmentDay = day;
+        
+        // اگر روز قسط بیشتر از روزهای ماه باشد، از آخر ماه استفاده کن
+        const daysInMonth = month < 7 ? 31 : month < 12 ? 30 : 29;
+        if(installmentDay > daysInMonth){
+            installmentDay = daysInMonth;
+        }
+        
+        const installmentDate = { 
+            year: year, 
+            month: month, 
+            day: installmentDay, 
+            dateStr: `${year}/${month}/${installmentDay}`, 
+            displayDate: `${installmentDay} ${persianMonths[month-1]} ${year}`, 
+            isPaid: false, 
+            isOverdue: isDateOverdue(year, month, installmentDay) 
+        };
         dates.push(installmentDate);
     }
+    
     return dates;
 }
-function isDateOverdue(y,m,d){ const t=getTodayPersianDate(); if(y<t.year)return true; if(y===t.year && m<t.month)return true; if(y===t.year && m===t.month && d<t.day)return true; return false;}
+
+// بررسی تاریخ سررسید
+function isDateOverdue(y,m,d){ 
+    const t=getTodayPersianDate(); 
+    if(y<t.year) return true; 
+    if(y===t.year && m<t.month) return true; 
+    if(y===t.year && m===t.month && d<t.day) return true; 
+    return false;
+}
+
+// محاسبه تعداد ماه‌ها بین دو تاریخ
+function calculateMonthsBetweenDates(startDate, endDate){
+    const startParts = startDate.split('-');
+    const endParts = endDate.split('-');
+    
+    const start = new Date(startParts[0], startParts[1]-1, startParts[2]);
+    const end = new Date(endParts[0], endParts[1]-1, endParts[2]);
+    
+    return (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+}
+
+// به‌روزرسانی تعداد ماه‌ها بر اساس تاریخ‌ها
+function updateMonthsFromDates(){
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if(startDate && endDate){
+        const months = calculateMonthsBetweenDates(startDate, endDate);
+        document.getElementById('installmentMonths').value = months;
+    }
+}
 
 // افزودن وام
 function addInstallment(){
     const name=document.getElementById('installmentName').value.trim();
     const monthly=parseAmount(document.getElementById('installmentMonthly').value);
     const day=parseInt(document.getElementById('installmentDay').value);
+    const startDate=document.getElementById('startDate').value;
+    const endDate=document.getElementById('endDate').value;
     const months=parseInt(document.getElementById('installmentMonths').value);
+    
     if(!name){ showNotification('لطفاً نام وام را وارد کنید','error'); return;}
     if(monthly<=0){ showNotification('مبلغ قسط اشتباه است','error'); return;}
     if(day<1 || day>31){ showNotification('روز سررسید ۱ تا ۳۱','error'); return;}
-    if(months<1 || months>120){ showNotification('ماه‌های مانده ۱ تا ۱۲۰','error'); return;}
-    const installmentDates=calculateInstallmentDates(day,months);
-    loans.push({ id:Date.now(), name:name, monthlyAmount:monthly, totalRemainingAmount:monthly*months, day:day, remainingMonths:months, dates:installmentDates, createdAt:new Date().toISOString(), isActive:true });
-    saveLoans(); renderLoans(); updateStats();
-    document.getElementById('installmentName').value=''; document.getElementById('installmentMonthly').value=''; document.getElementById('installmentDay').value=''; document.getElementById('installmentMonths').value='';
+    if(!startDate){ showNotification('لطفاً تاریخ شروع را انتخاب کنید','error'); return;}
+    if(!endDate){ showNotification('لطفاً تاریخ پایان را انتخاب کنید','error'); return;}
+    if(months<1 || months>120){ showNotification('تعداد ماه‌ها ۱ تا ۱۲۰','error'); return;}
+    
+    // بررسی اینکه تاریخ پایان بعد از تاریخ شروع باشد
+    if(new Date(endDate) <= new Date(startDate)){
+        showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد','error');
+        return;
+    }
+    
+    const installmentDates=calculateInstallmentDates(startDate, endDate, day);
+    loans.push({ 
+        id:Date.now(), 
+        name:name, 
+        monthlyAmount:monthly, 
+        totalRemainingAmount:monthly*months, 
+        day:day, 
+        remainingMonths:months, 
+        startDate:startDate,
+        endDate:endDate,
+        dates:installmentDates, 
+        createdAt:new Date().toISOString(), 
+        isActive:true 
+    });
+    
+    saveLoans(); 
+    renderLoans(); 
+    updateStats();
+    
+    // پاک کردن فرم
+    document.getElementById('installmentName').value=''; 
+    document.getElementById('installmentMonthly').value=''; 
+    document.getElementById('installmentDay').value=''; 
+    document.getElementById('startDate').value=''; 
+    document.getElementById('endDate').value=''; 
+    document.getElementById('installmentMonths').value='';
+    
     showNotification('وام جدید اضافه شد');
 }
 
 // حذف وام
-function deleteLoan(id){ if(confirm('آیا از حذف این وام مطمئن هستید؟')){ loans=loans.filter(l=>l.id!==id); saveLoans(); renderLoans(); updateStats(); showNotification('وام حذف شد');}}
+function deleteLoan(id){ 
+    if(confirm('آیا از حذف این وام مطمئن هستید؟')){ 
+        loans=loans.filter(l=>l.id!==id); 
+        saveLoans(); 
+        renderLoans(); 
+        updateStats(); 
+        showNotification('وام حذف شد');
+    }
+}
 
 // پرداخت قسط
-function togglePayment(loanId,dateIndex,status){ const loan=loans.find(l=>l.id===loanId); if(loan){ loan.dates[dateIndex].isPaid=status; const unpaidCount=loan.dates.filter(d=>!d.isPaid).length; loan.remainingMonths=unpaidCount; loan.totalRemainingAmount=loan.monthlyAmount*unpaidCount; loan.isActive=unpaidCount>0; saveLoans(); renderLoans(); updateStats(); showNotification(`قسط ${status?'پرداخت شد':'پرداخت نشد'}`);}}
+function togglePayment(loanId,dateIndex,status){ 
+    const loan=loans.find(l=>l.id===loanId); 
+    if(loan){ 
+        loan.dates[dateIndex].isPaid=status; 
+        const unpaidCount=loan.dates.filter(d=>!d.isPaid).length; 
+        loan.remainingMonths=unpaidCount; 
+        loan.totalRemainingAmount=loan.monthlyAmount*unpaidCount; 
+        loan.isActive=unpaidCount>0; 
+        saveLoans(); 
+        renderLoans(); 
+        updateStats(); 
+        showNotification(`قسط ${status?'پرداخت شد':'پرداخت نشد'}`);
+    }
+}
 
 // نمایش وام‌ها
-function renderLoans(){ const container=document.getElementById('installmentsContainer'); if(loans.length===0){ container.innerHTML=`<div class="empty-state"><i>💳</i><h3>هیچ وامی ثبت نشده است</h3><p>وام اول خود را اضافه کنید</p></div>`; return;}
-container.innerHTML=''; loans.forEach(loan=>{ let installmentsHTML=''; loan.dates.forEach((d,i)=>{ let rowClass=d.isPaid?'paid':d.isOverdue?'overdue':'upcoming'; installmentsHTML+=`<div class="installment-row ${rowClass}"><div class="installment-date">${d.displayDate}</div><div class="installment-amount">${formatNumber(loan.monthlyAmount)}</div><div class="payment-buttons"><button class="pay-btn ${d.isPaid?'paid':'unpaid'}" onclick="togglePayment(${loan.id},${i},${!d.isPaid})">${d.isPaid?'پرداخت شد':'پرداخت نشده'}</button></div></div>`;}); 
-container.innerHTML+=`<div class="loan-card"><div class="loan-header"><div class="loan-title">${loan.name}</div><div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div></div><div class="loan-details"><div class="detail-item"><div class="detail-label">کل قسط‌ها</div><div class="detail-value">${loan.dates.length}</div></div><div class="detail-item"><div class="detail-label">مانده</div><div class="detail-value">${loan.remainingMonths}</div></div></div><div class="installments-list">${installmentsHTML}</div><div class="loan-actions"><span class="loan-status ${loan.isActive?'status-active':'status-completed'}">${loan.isActive?'فعال':'اتمام'}</span><button class="delete-btn" onclick="deleteLoan(${loan.id})">حذف وام</button></div></div>`; });}
+function renderLoans(){ 
+    const container=document.getElementById('installmentsContainer'); 
+    if(loans.length===0){ 
+        container.innerHTML=`<div class="empty-state"><i>💳</i><h3>هیچ وامی ثبت نشده است</h3><p>وام اول خود را اضافه کنید</p></div>`; 
+        return;
+    }
+    
+    container.innerHTML=''; 
+    loans.forEach(loan=>{ 
+        let installmentsHTML=''; 
+        loan.dates.forEach((d,i)=>{ 
+            let rowClass=d.isPaid?'paid':d.isOverdue?'overdue':'upcoming'; 
+            installmentsHTML+=`
+                <div class="installment-row ${rowClass}">
+                    <div class="installment-date">${d.displayDate}</div>
+                    <div class="installment-amount">${formatNumber(loan.monthlyAmount)}</div>
+                    <div class="payment-buttons">
+                        <button class="pay-btn ${d.isPaid?'paid':'unpaid'}" onclick="togglePayment(${loan.id},${i},${!d.isPaid})">
+                            ${d.isPaid?'پرداخت شد':'پرداخت نشده'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }); 
+        
+        // تبدیل تاریخ شروع و پایان به شمسی
+        const startParts = loan.startDate.split('-');
+        const [startJy, startJm, startJd] = gregorianToJalali(
+            parseInt(startParts[0]), 
+            parseInt(startParts[1]), 
+            parseInt(startParts[2])
+        );
+        
+        const endParts = loan.endDate.split('-');
+        const [endJy, endJm, endJd] = gregorianToJalali(
+            parseInt(endParts[0]), 
+            parseInt(endParts[1]), 
+            parseInt(endParts[2])
+        );
+        
+        const startDateStr = `${startJd} ${persianMonths[startJm-1]} ${startJy}`;
+        const endDateStr = `${endJd} ${persianMonths[endJm-1]} ${endJy}`;
+        
+        container.innerHTML+=`
+            <div class="loan-card">
+                <div class="loan-header">
+                    <div class="loan-title">${loan.name}</div>
+                    <div class="loan-amount">${formatNumber(loan.totalRemainingAmount)}</div>
+                </div>
+                <div class="loan-details">
+                    <div class="detail-item">
+                        <div class="detail-label">کل قسط‌ها</div>
+                        <div class="detail-value">${loan.dates.length}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">مانده</div>
+                        <div class="detail-value">${loan.remainingMonths}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">تاریخ پایان</div>
+                        <div class="detail-value">${endDateStr}</div>
+                    </div>
+                </div>
+                <div class="installments-list">${installmentsHTML}</div>
+                <div class="loan-actions">
+                    <span class="loan-status ${loan.isActive?'status-active':'status-completed'}">
+                        ${loan.isActive?'فعال':'اتمام'}
+                    </span>
+                    <button class="delete-btn" onclick="deleteLoan(${loan.id})">حذف وام</button>
+                </div>
+            </div>
+        `; 
+    });
+}
 
 // مدیریت داده‌ها
 function saveLoans(){ localStorage.setItem('loans',JSON.stringify(loans)); }
-function exportData(){ const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(loans)); const dlAnchor=document.createElement('a'); dlAnchor.setAttribute("href",dataStr); dlAnchor.setAttribute("download","loans.json"); dlAnchor.click();}
-function importData(event){ const file=event.target.files[0]; const reader=new FileReader(); reader.onload=function(e){ try{ loans=JSON.parse(e.target.result); saveLoans(); renderLoans(); updateStats(); showNotification('داده‌ها وارد شدند'); }catch(err){ showNotification('خطا در وارد کردن فایل','error'); }}; reader.readAsText(file);}
-function clearAllData(){ if(confirm('آیا مطمئن هستید؟ همه داده‌ها حذف شوند؟')){ loans=[]; saveLoans(); renderLoans(); updateStats(); showNotification('همه داده‌ها حذف شدند');}}
+
+function exportData(){ 
+    const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(loans)); 
+    const dlAnchor=document.createElement('a'); 
+    dlAnchor.setAttribute("href",dataStr); 
+    dlAnchor.setAttribute("download","loans.json"); 
+    dlAnchor.click();
+}
+
+function importData(event){ 
+    const file=event.target.files[0]; 
+    const reader=new FileReader(); 
+    reader.onload=function(e){ 
+        try{ 
+            loans=JSON.parse(e.target.result); 
+            saveLoans(); 
+            renderLoans(); 
+            updateStats(); 
+            showNotification('داده‌ها وارد شدند'); 
+        }catch(err){ 
+            showNotification('خطا در وارد کردن فایل','error'); 
+        }
+    }; 
+    reader.readAsText(file);
+}
+
+function clearAllData(){ 
+    if(confirm('آیا مطمئن هستید؟ همه داده‌ها حذف شوند؟')){ 
+        loans=[]; 
+        saveLoans(); 
+        renderLoans(); 
+        updateStats(); 
+        showNotification('همه داده‌ها حذف شدند'); 
+    }
+}
 
 // آمار
-function updateStats(){ const totalLoans=loans.length; let upcomingCount=0; let overdueCount=0; let totalRemaining=0; loans.forEach(loan=>{ loan.dates.forEach(d=>{ if(!d.isPaid){ const t=getTodayPersianDate(); if(d.year>t.year||(d.year===t.year && d.month>t.month)||(d.year===t.year && d.month===t.month && d.day>=t.day)) upcomingCount++; if(d.isOverdue && !d.isPaid) overdueCount++; totalRemaining+=loan.monthlyAmount; } });}); document.getElementById('totalLoans').textContent=totalLoans; document.getElementById('upcomingCount').textContent=upcomingCount; document.getElementById('overdueCount').textContent=overdueCount; document.getElementById('totalRemaining').textContent=formatNumber(totalRemaining);}
+function updateStats(){ 
+    const totalLoans=loans.length; 
+    let upcomingCount=0; 
+    let overdueCount=0; 
+    let totalRemaining=0; 
+    
+    loans.forEach(loan=>{ 
+        loan.dates.forEach(d=>{ 
+            if(!d.isPaid){ 
+                const t=getTodayPersianDate(); 
+                if(d.year>t.year||(d.year===t.year && d.month>t.month)||(d.year===t.year && d.month===t.month && d.day>=t.day)) 
+                    upcomingCount++; 
+                if(d.isOverdue && !d.isPaid) 
+                    overdueCount++; 
+                totalRemaining+=loan.monthlyAmount; 
+            } 
+        });
+    }); 
+    
+    document.getElementById('totalLoans').textContent=totalLoans; 
+    document.getElementById('upcomingCount').textContent=upcomingCount; 
+    document.getElementById('overdueCount').textContent=overdueCount; 
+    document.getElementById('totalRemaining').textContent=formatNumber(totalRemaining);
+}
 
 // بررسی نوتیفیکیشن قسط‌ها
 function checkInstallmentNotifications(){
     const today=getTodayPersianDate();
-    const tomorrowDate=new Date(); tomorrowDate.setDate(tomorrowDate.getDate()+1);
+    const tomorrowDate=new Date(); 
+    tomorrowDate.setDate(tomorrowDate.getDate()+1);
     const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
+    
     loans.forEach(loan=>{
         loan.dates.forEach(date=>{
             if(!date.isPaid){
@@ -190,9 +529,11 @@ function checkInstallmentNotifications(){
 // دکمه تست نوتیفیکیشن
 function testNotificationCheckDue(){
     const today=getTodayPersianDate();
-    const tomorrowDate=new Date(); tomorrowDate.setDate(tomorrowDate.getDate()+1);
+    const tomorrowDate=new Date(); 
+    tomorrowDate.setDate(tomorrowDate.getDate()+1);
     const [ty,tm,td]=gregorianToJalali(tomorrowDate.getFullYear(),tomorrowDate.getMonth()+1,tomorrowDate.getDate());
     let hasDue=false;
+    
     loans.forEach(loan=>{
         loan.dates.forEach(date=>{
             if(!date.isPaid){
@@ -204,17 +545,25 @@ function testNotificationCheckDue(){
             }
         });
     });
+    
     if(!hasDue){
         showNotificationWithSound('💳 هیچ قسطی امروز یا فردا نیست','موعدی وجود ندارد');
     }
 }
 
+// تنظیم رویدادها برای تاریخ‌ها
+document.getElementById('startDate').addEventListener('change', updateMonthsFromDates);
+document.getElementById('endDate').addEventListener('change', updateMonthsFromDates);
+
 // درخواست دسترسی نوتیفیکیشن
-if("Notification" in window && Notification.permission!=="granted"){ Notification.requestPermission(); }
+if("Notification" in window && Notification.permission!=="granted"){ 
+    Notification.requestPermission(); 
+}
 
 // بررسی هر ۳۰ دقیقه
 setInterval(checkInstallmentNotifications,30*60*1000);
 
+// بارگذاری اولیه
 renderLoans();
 updateStats();
 </script>
