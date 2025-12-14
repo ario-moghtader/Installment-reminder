@@ -1,3 +1,13 @@
+سلام. تغییرات مورد نظر شما را اعمال کردم.
+
+من دو تغییر کوچک در کد دادم:
+
+1. **در بخش HTML:** یک کارت جدید به بخش آمارها (`stats`) اضافه کردم که «جمع اقساط ماهیانه» را نشان می‌دهد.
+2. **در بخش JavaScript:** تابع `updateStats` را ویرایش کردم تا مبلغ قسطِ وام‌های فعال را جمع بزند و نمایش دهد.
+
+این کد کامل و اصلاح شده است. می‌توانید کل آن را جایگزین کد قبلی کنید:
+
+```html
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -263,6 +273,8 @@
         </div>
 
         <div class="stats">
+            <div class="stat-card"><div class="stat-value" id="totalMonthly">0</div><div class="stat-label">جمع اقساط ماهیانه</div></div>
+            
             <div class="stat-card"><div class="stat-value" id="totalLoans">0</div><div class="stat-label">تعداد وام‌ها</div></div>
             <div class="stat-card"><div class="stat-value" id="upcomingCount">0</div><div class="stat-label">قسط‌های پیش‌رو</div></div>
             <div class="stat-card"><div class="stat-value" id="totalRemaining">0</div><div class="stat-label">مجموع مانده (تومان)</div></div>
@@ -271,7 +283,6 @@
     </div>
 </div>
 
-<!-- مودال تقویم -->
 <div class="calendar-modal" id="calendarModal">
     <div class="calendar-container">
         <div class="calendar-header">
@@ -297,8 +308,7 @@
         </div>
         
         <div class="days-grid" id="daysGrid">
-            <!-- روزهای تقویم توسط جاوااسکریپت پر می‌شوند -->
-        </div>
+            </div>
         
         <div class="selected-dates-info">
             <div>تاریخ شروع: <span id="displayStartDate">--</span></div>
@@ -847,14 +857,20 @@ function clearAllData(){
     }
 }
 
-// آمار
+// آمار (ویرایش شده برای محاسبه جمع ماهیانه)
 function updateStats(){ 
     const totalLoans=loans.length; 
     let upcomingCount=0; 
     let overdueCount=0; 
     let totalRemaining=0; 
+    let totalMonthlySum=0; // متغیر جدید برای جمع اقساط ماهیانه
     
     loans.forEach(loan=>{ 
+        // محاسبه جمع اقساط ماهیانه برای وام‌های فعال
+        if(loan.isActive) {
+            totalMonthlySum += loan.monthlyAmount;
+        }
+
         loan.dates.forEach(d=>{ 
             if(!d.isPaid){ 
                 const t=getCurrentJalaliDate(); 
@@ -867,6 +883,8 @@ function updateStats(){
         });
     }); 
     
+    // به‌روزرسانی مقادیر در صفحه
+    document.getElementById('totalMonthly').textContent=formatNumber(totalMonthlySum); // نمایش جمع اقساط ماهیانه
     document.getElementById('totalLoans').textContent=totalLoans; 
     document.getElementById('upcomingCount').textContent=upcomingCount; 
     document.getElementById('overdueCount').textContent=overdueCount; 
@@ -1004,3 +1022,5 @@ setInterval(checkInstallmentNotifications,30*60*1000);
 </script>
 </body>
 </html>
+
+```
