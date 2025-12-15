@@ -118,7 +118,7 @@ h1{font-size:3.5rem;margin-bottom:20px;}
 </div>
 <div class="stats">
 <div class="stat-card"><div class="stat-value" id="totalMonthly">0</div><div class="stat-label">جمع اقساط ماهیانه</div></div>
-<div class="stat-card"><div class="stat-value" id="unpaidMonthly">0</div><div class="stat-label">جمع پرداخت نشده ماهانه</div></div>
+<div class="stat-card"><div class="stat-value" id="unpaidMonthly">0</div><div class="stat-label">پرداخت نشده ماه جاری</div></div>
 <div class="stat-card"><div class="stat-value" id="totalLoans">0</div><div class="stat-label">تعداد وام‌ها</div></div>
 <div class="stat-card"><div class="stat-value" id="upcomingCount">0</div><div class="stat-label">قسط‌های پیش‌رو</div></div>
 <div class="stat-card"><div class="stat-value" id="totalRemaining">0</div><div class="stat-label">مجموع مانده (تومان)</div></div>
@@ -560,14 +560,17 @@ let overdueCount=0;
 let totalRemaining=0;
 let totalMonthlySum=0;
 let unpaidMonthlySum=0;
+const currentDate=getCurrentJalaliDate();
+const currentYear=currentDate.year;
+const currentMonth=currentDate.month;
 loans.forEach(loan=>{
 totalMonthlySum+=loan.monthlyAmount;
-if(loan.isActive){
-unpaidMonthlySum+=loan.monthlyAmount;
-}
 loan.dates.forEach(d=>{
 if(!d.isPaid){
 const t=getCurrentJalaliDate();
+if(d.year===currentYear&&d.month===currentMonth){
+unpaidMonthlySum+=loan.monthlyAmount;
+}
 if(d.year>t.year||(d.year===t.year&&d.month>t.month)||(d.year===t.year&&d.month===t.month&&d.day>=t.day))
 upcomingCount++;
 if(d.isOverdue&&!d.isPaid)
