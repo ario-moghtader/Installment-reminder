@@ -559,7 +559,7 @@ let overdueCount=0;
 let totalRemaining=0;
 let totalMonthlySum=0;
 loans.forEach(loan=>{
-if(loan.isActive){totalMonthlySum+=loan.monthlyAmount;}
+totalMonthlySum+=loan.monthlyAmount;
 loan.dates.forEach(d=>{
 if(!d.isPaid){
 const t=getCurrentJalaliDate();
